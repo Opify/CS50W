@@ -14,4 +14,9 @@
 .submit {
     display: flex;
     justify-content: center;
+    text-align: center;
+}
+
+.submit input {
+    margin: 5px 5px;
 }
