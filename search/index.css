@@ -40,3 +40,14 @@
     justify-content: flex-end;
     width: 90vw;
 }
+
+.image-logo {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+.image-logo > span {
+    color: blue;
+}
