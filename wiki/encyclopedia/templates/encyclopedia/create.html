@@ -1,0 +1,14 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+Create article
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when creating an article-->
+    <h1>Create article</h1>
+
+    {{ form }}
+    {% csrf_token %}
+
+{% endblock %}
