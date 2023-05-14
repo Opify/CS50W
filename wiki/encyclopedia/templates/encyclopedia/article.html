@@ -1,0 +1,10 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block body %}
+<!-- This page should be seen when one finds a valid article-->
+{{ content|safe }}
+{% endblock %}

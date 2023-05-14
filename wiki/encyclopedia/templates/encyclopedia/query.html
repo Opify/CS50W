@@ -1,0 +1,14 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+Query results
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when one tries to search for an article that does not exist -->
+    <h1>Query results</h1>
+
+    {% for result in results %}
+    <li><a href="/wiki/{{ result }}">{{ result }}</a></li>
+
+{% endblock %}
