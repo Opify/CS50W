@@ -7,7 +7,7 @@ import re
 import random
 import datetime
 
-# Task 2, 6 (done)
+# Task 2, 6 (both done)
 def index(request):
     entries = util.list_entries()
     random.seed(datetime.datetime.now())
