@@ -1,12 +1,9 @@
 from django.shortcuts import render, HttpResponseRedirect
 from . import util
 from django import forms
+from django.urls import reverse
 import markdown
 import re
-
-class createForm(forms.Form):
-    title = forms.TextInput()
-    content = forms.Textarea()
 
 # Task 2 (done)
 def index(request):
@@ -40,21 +37,18 @@ def query(request):
             "results":suggestions
         })
 
-# Task 4
+# Task 4 (done)
 def create(request):
     # handle form creation
     if request.method == "POST":
-        form = createForm(request.POST)
-        if form.is_valid():
-            filename = form.cleaned_data.get("Title")
-            data = form.cleaned_data.get("Content")
-            if filename in util.list_entries():
-                return index(request)
-            else:
-                util.save_entry(filename, data)
-                return article(request, filename)
+        title = request.POST.get("title")
+        content = request.POST.get("content")
+        if title in util.list_entries():
+            return index(request)
+        if title == None:
+            return create(request)
+        util.save_entry(title, content)
+        return article(request, title)
     # handle getting to form
     else:
-        return render(request, "encyclopedia/create.html", {
-            "form":createForm()
-        })
+        return render(request, "encyclopedia/create.html")

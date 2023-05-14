@@ -7,8 +7,11 @@ Create article
 {% block body %}
 <!-- This page should exist when creating an article-->
     <h1>Create article</h1>
-
-    {{ form }}
+<form action="create" method="post">
     {% csrf_token %}
-
+    <input type="text" name="title" placeholder="Title" required>
+    <textarea name="content" placeholder="Lorem Ipsum"></textarea>
+    <br>
+    <input type="submit" value="Submit">
+</form>
 {% endblock %}
