@@ -68,12 +68,7 @@ def edit(request):
         content = request.POST.get("content")
         # prevent file sabotage
         if title not in util.list_entries():
-            with open("entries/" + request.GET["article"] + ".md", 'r') as f:
-                return render(request, "encyclopedia/edit.html", {
-                    "random": randomArticle(),
-                    "title":request.GET["article"],
-                    "content":f.read()
-                })
+            return index(request)
         util.save_entry(title, content)
         return article(request, title)
     else:
