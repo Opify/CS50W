@@ -1,20 +1,16 @@
 from django.shortcuts import render, HttpResponseRedirect
 from . import util
-from django import forms
-from django.urls import reverse
 import markdown
 import re
 import random
 import datetime
 
-# Task 2, 6 (both done)
+# Task 2 (done)
 def index(request):
     entries = util.list_entries()
-    random.seed(datetime.datetime.now())
-    rand = entries[random.randint(0, len(entries) - 1)]
     return render(request, "encyclopedia/index.html", {
         "entries": entries,
-        "random": rand
+        "random": randomArticle()
     })
 
 # Tasks 1 and 7 (both done)
@@ -23,10 +19,13 @@ def article(request, entry):
         site = markdown.markdown(util.get_entry(entry))
         return render(request, "encyclopedia/article.html", {
             "title": entry,
-            "content": site
+            "content": site,
+            "random": randomArticle()
         })
     else:
-        return render(request, "encyclopedia/error.html")
+        return render(request, "encyclopedia/error.html", {
+            "random": randomArticle()
+        })
     
 # Task 3 (done)
 def query(request):
@@ -40,12 +39,13 @@ def query(request):
             if re.search(query, entry) is not None:
                 suggestions.append(entry)
         return render(request, "encyclopedia/query.html", {
-            "results": suggestions
+            "results": suggestions,
+            "random": randomArticle()
         })
 
 # Task 4 (done)
 def create(request):
-    # handle form creation
+    # handle article creation
     if request.method == "POST":
         title = request.POST.get("title")
         content = request.POST.get("content")
@@ -57,4 +57,13 @@ def create(request):
         return article(request, title)
     # handle getting to form
     else:
-        return render(request, "encyclopedia/create.html")
+        return render(request, "encyclopedia/create.html", {
+            "random": randomArticle()
+        })
+
+# Task 6
+def randomArticle():
+    entries = util.list_entries()
+    random.seed(datetime.datetime.now())
+    rand = entries[random.randint(0, len(entries) - 1)]
+    return rand
