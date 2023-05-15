@@ -7,4 +7,8 @@
 {% block body %}
 <!-- This page should be seen when one finds a valid article-->
 {{ content|safe }}
+<form action="edit">
+    <input type="hidden" value="{{ title }}" name="article">
+    <input type="submit" value="Edit article">
+</form>
 {% endblock %}

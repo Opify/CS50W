@@ -1,0 +1,21 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+Edit article
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when editing an article-->
+    <h1>Edit article</h1>
+    {{ title }}
+<form action="edit" method="post">
+    {% csrf_token %}
+    <div>
+        <input type="hidden" name="title" value="{{ title }}">
+        <textarea name="content" placeholder="Lorem Ipsum">{{ content }}</textarea>    
+    </div>
+    <div>
+        <input type="submit" value="Submit">
+    </div>
+</form>
+{% endblock %}

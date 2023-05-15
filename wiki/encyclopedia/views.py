@@ -61,7 +61,31 @@ def create(request):
             "random": randomArticle()
         })
 
-# Task 6
+# Task 5 (done)
+def edit(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        content = request.POST.get("content")
+        # prevent file sabotage
+        if title not in util.list_entries():
+            with open("entries/" + request.GET["article"] + ".md", 'r') as f:
+                return render(request, "encyclopedia/edit.html", {
+                    "random": randomArticle(),
+                    "title":request.GET["article"],
+                    "content":f.read()
+                })
+        util.save_entry(title, content)
+        return article(request, title)
+    else:
+        # get saved data
+        with open("entries/" + request.GET["article"] + ".md", 'r') as f:
+            return render(request, "encyclopedia/edit.html", {
+                "random": randomArticle(),
+                "title":request.GET["article"],
+                "content":f.read()
+            })
+
+# Task 6 (done)
 def randomArticle():
     entries = util.list_entries()
     random.seed(datetime.datetime.now())
