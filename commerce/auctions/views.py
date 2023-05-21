@@ -8,8 +8,12 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Listing, Bid, Comment, CreateForm, BidForm, CommentForm
 
 
+# Task 3 (done)
 def index(request):
-    return render(request, "auctions/index.html")
+    listings = Listing.objects.all()
+    return render(request, "auctions/index.html", {
+        "listings": listings
+    })
 
 
 def login_view(request):

@@ -2,6 +2,40 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-
-    TODO
+    <ul class="list-group">
+    {% for listing in listings %}
+        <li class="list-group-item">
+            <div>
+                <h4>
+                    Item Name
+                </h4>
+                {{ listing.item_name }}
+            </div>
+            <div>
+                <h4>
+                    Item Description
+                </h4>
+                {{ listing.item_description }}
+            </div>
+            <div>
+                <h4>
+                    Item Category
+                </h4>
+                {{ listing.item_category }}
+            </div>
+            <div>
+                <h4>
+                    Item Photo
+                </h4>
+                {{ listing.item_photo }}
+            </div>
+            <div>
+                <h4>
+                    Starting Price
+                </h4>
+                {{ listing.starting_price }}
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
 {% endblock %}
