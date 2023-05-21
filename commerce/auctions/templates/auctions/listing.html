@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ item.item_name }}</h2>
+    <div>
+        {{ item.item_photo }}
+        <p>{{ item.item_category }}</p>
+        <p>{{ item.item_description }}</p>
+        <p>{{ price }}</p>
+    </div>
+    <div>
+        {{ for comment in comments }}
+            <p>{{ comment.comment }}</p>
+        {{ endfor }}
+    </div>
+{% endblock %}

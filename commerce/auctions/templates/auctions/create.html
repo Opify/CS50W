@@ -3,8 +3,31 @@
 {% block body %}
     <h2>Create Listing</h2>
         <form action="/create" method="POST">
-            {{ form.as_p }}
+            <div class="form-group">
             {% csrf_token %}
-            <input type="submit" value="Submit">
+                <div>
+                    <label>Item Name:</label>
+                    <input class="form-control" type="text" name="item_name" required>
+                </div>
+                <div>
+                    <label>Item Description:</label>
+                    <input class="form-control" type="text" name="item_description" required>
+                </div>
+                <div>
+                    <label>Item Category:</label>
+                    <input class="form-control" type="text" name="item_category">
+                </div>
+                <div>
+                    <label>URL for image of item:</label>
+                    <input class="form-control" type="text" name="item_image">
+                </div>
+                <div>
+                    <label>Item Price:</label>
+                    <input class="form-control" type="number" name="item_price" min="1" step="any">
+                </div>
+                <div>
+                    <input class="btn btn-primary" type="submit" value="Submit">
+                </div>
+            </div>
         </form>
 {% endblock %}

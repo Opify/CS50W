@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Listing, Bid, Comment, CreateForm, CommentForm
+from .models import User, Listing, Bid, Comment
 
 
 # Task 3 (done)
@@ -67,19 +67,38 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-# Task 2 (done)
+@login_required
+# Task 2
 def create(request):
     if request.method == "POST":
-        form = CreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request, "auctions/create.html", {
-                "form": form
-            })
+       price = float(request.POST.get("item_price"))
+       item = Listing(item_name=request.POST.get("item_name"), item_description=request.POST.get("item_description"), item_category=request.POST.get("item_category"), item_photo=request.POST.get("item_image"), starting_price=price, listing_user=request.user)
+       item.save()
+       return HttpResponseRedirect(reverse("index"))
     else:
-        form = CreateForm()
-        return render(request, "auctions/create.html", {
-            "form": form
+        return render(request, "auctions/create.html")
+    
+# Task 4
+def listing(request, id):
+    if request.method == "POST":
+        pass
+    else:
+        item = Listing.objects.get(pk=id)
+        bid = Bid.objects.get(pk=id)
+        comments = Comment.objects.get(pk=id)
+        if request.user.is_authenticated:
+            if item.listing_user == request.user.username:
+                creator = True
+            else:
+                creator = False
+        if not bid:
+            price = item.starting_price
+        else:
+            price = bid.current_amount
+        return render(request, "auctions/listing.html", {
+            "item": item,
+            "bid": bid,
+            "comments":comments,
+            "creator":creator,
+            "price":price
         })
