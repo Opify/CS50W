@@ -23,7 +23,6 @@ class Bid(models.Model):
     current_amount = models.FloatField(default=0)
     bid_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     item = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="bidding_item_name")
-    bid_amount = models.FloatField(default=0)
     def __str__(self):
         return f"Current amount: {self.current_amount}"
 
@@ -39,11 +38,6 @@ class CreateForm(ModelForm):
     class Meta:
         model = Listing
         fields = "__all__"
-        
-class BidForm(ModelForm):
-    class Meta:
-        model = Bid
-        fields = ["current_amount"]
 
 class CommentForm(ModelForm):
     class Meta:

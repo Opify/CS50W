@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Listing, Bid, Comment, CreateForm, BidForm, CommentForm
+from .models import User, Listing, Bid, Comment, CreateForm, CommentForm
 
 
 # Task 3 (done)
@@ -70,7 +70,7 @@ def register(request):
 # Task 2 (done)
 def create(request):
     if request.method == "POST":
-        form=CreateForm(request.POST)
+        form = CreateForm(request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("index"))
