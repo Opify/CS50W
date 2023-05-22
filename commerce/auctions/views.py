@@ -191,7 +191,7 @@ def watchlist(request):
     })
 
 
-# Task 6
+# Task 6 (done)
 def categories(request):
     category_set = Listing.objects.values("item_category").annotate(Count("item_category"))
     return render(request, "auctions/categories.html", {
