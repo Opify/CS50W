@@ -18,7 +18,7 @@ class Listing(models.Model):
     closed = models.BooleanField(default=False)
     listing_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     def __str__(self):
-        return f"Item id: {self.id}, Listing User: {self.listing_user}"
+        return f"Item id: {self.id}, Listing User: {self.listing_user}, Item Category: {self.item_category}"
 
 class Bid(models.Model):
     current_amount = models.FloatField(default=0)

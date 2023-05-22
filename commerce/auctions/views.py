@@ -185,3 +185,24 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "listing_set": listing_set
     })
+
+
+# Task 6
+def categories(request):
+    category_set = Listing.objects.values("item_category")
+    return render(request, "auctions/categories.html", {
+        "categories":category_set
+    })
+
+def category(request, category):
+    listing_set = []
+    listings = Listing.objects.filter(item_category=category).filter(closed=False).all()
+    for listing in listings:
+        try:
+            listing_set.append([listing, Bid.objects.filter(item__id=listing.id).order_by('-current_amount').first()])
+        except:
+            listing_set.append([listing, None])
+    return render(request, "auctions/category.html", {
+        "listings":listing_set,
+        "category":category
+    })
