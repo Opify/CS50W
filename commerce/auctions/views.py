@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 
 from .models import User, Listing, Bid, Comment, Watchlist
 
@@ -77,8 +78,11 @@ def register(request):
 # Task 2 (done)
 def create(request):
     if request.method == "POST":
+        item_category = request.POST.get("item_category")
+        if item_category == "":
+            item_category = "None"
         price = float(request.POST.get("item_price"))
-        item = Listing(item_name=request.POST.get("item_name"), item_description=request.POST.get("item_description"), item_category=request.POST.get("item_category"), item_photo=request.POST.get("item_image"), starting_price=price, listing_user=request.user)
+        item = Listing(item_name=request.POST.get("item_name"), item_description=request.POST.get("item_description"), item_category=item_category, item_photo=request.POST.get("item_image"), starting_price=price, listing_user=request.user)
         item.save()
         return HttpResponseRedirect(reverse("index"))
     else:
@@ -189,7 +193,7 @@ def watchlist(request):
 
 # Task 6
 def categories(request):
-    category_set = Listing.objects.values("item_category")
+    category_set = Listing.objects.values("item_category").annotate(Count("item_category"))
     return render(request, "auctions/categories.html", {
         "categories":category_set
     })

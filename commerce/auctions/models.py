@@ -12,7 +12,7 @@ class User(AbstractUser):
 class Listing(models.Model):
     item_name = models.CharField(max_length=100)
     item_description = models.TextField()
-    item_category = models.CharField(max_length=100, blank=True)
+    item_category = models.CharField(max_length=100, default="None")
     item_photo = models.CharField(max_length=100, blank=True)
     starting_price = models.FloatField()
     closed = models.BooleanField(default=False)
