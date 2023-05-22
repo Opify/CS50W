@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Listing, Bid, Comment
+from .models import User, Listing, Bid, Comment, Watchlist
 
 
 # Task 3 (done)
@@ -14,7 +14,7 @@ def index(request):
     listings = Listing.objects.all()
     for listing in listings:
         try:
-            listing_set.append([listing, Bid.objects.filter(pk=listing.id).order_by(-'current_amount')[0]])
+            listing_set.append([listing, Bid.objects.filter(item__id=listing.id).order_by('-current_amount').first()])
         except:
             listing_set.append([listing, None])
     return render(request, "auctions/index.html", {
@@ -127,15 +127,22 @@ def listing(request, id):
         else:
             price = bid.current_amount
         minimum = price + 0.01
+        try:
+            Watchlist.objects.get(pk=id)
+            in_watchlist = True
+        except:
+            in_watchlist = False
         return render(request, "auctions/listing.html", {
             "item": item,
             "bid": bid,
-            "comments":comments,
-            "creator":creator,
-            "price":price,
-            "minimum":minimum
+            "comments": comments,
+            "creator": creator,
+            "price": price,
+            "minimum": minimum,
+            "in_watchlist": in_watchlist
         })
-    
+
+
 def comments(request, id):
     if request.method == "POST":
         comment_data = Comment(comment=request.POST.get("comment"))
@@ -145,6 +152,7 @@ def comments(request, id):
     else:
         return HttpResponseRedirect(reverse("index"))
     
+
 def close(request, id):
     if request.method == "POST":
         listing = Listing.objects.get(pk=id)
@@ -153,3 +161,27 @@ def close(request, id):
         return HttpResponseRedirect(reverse("listing", args=[id]))
     else:
         return HttpResponseRedirect(reverse("index"))
+
+
+def add_watchlist(request, id):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=id)
+        watchlist = Watchlist(item=listing, user=request.user)
+        watchlist.save()
+        return HttpResponseRedirect(reverse("listing", args=[id]))
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
+
+# Task 5 (done)
+def watchlist(request):
+    listing_set = []
+    listings = Watchlist.objects.all()
+    for listing in listings:
+        try:
+            listing_set.append([listing, Bid.objects.filter(pk=listing.item.id).order_by('-current_amount').first()])
+        except:
+            listing_set.append([listing, None])
+    return render(request, "auctions/watchlist.html", {
+        "listing_set": listing_set
+    })
