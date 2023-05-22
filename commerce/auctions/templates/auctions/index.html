@@ -3,37 +3,44 @@
 {% block body %}
     <h2>Active Listings</h2>
     <ul class="list-group">
-    {% for listing in listings %}
+    {% for listing in listing_set %}
         <li class="list-group-item">
             <div>
                 <h4>
                     Item Name
                 </h4>
-                {{ listing.item_name }}
+                {{ listing.0.item_name }}
             </div>
             <div>
                 <h4>
                     Item Description
                 </h4>
-                {{ listing.item_description }}
+                {{ listing.0.item_description }}
             </div>
             <div>
                 <h4>
                     Item Category
                 </h4>
-                {{ listing.item_category }}
+                {{ listing.0.item_category }}
             </div>
             <div>
                 <h4>
                     Item Photo
                 </h4>
-                {{ listing.item_photo }}
+                <img href="{{ listing.0.item_photo }}">
             </div>
             <div>
                 <h4>
-                    Starting Price
+                    Current Price
                 </h4>
-                {{ listing.starting_price }}
+                {% if listing.1 == None %}
+                {{ listing.0.starting_price }}
+                {% else %}
+                {{ listing.1.current_amount }}
+                {% endif %}
+            </div>
+            <div>
+                <a href="{% url 'listing' id=listing.0.id %}">Go to listing</a>
             </div>
         </li>
     {% endfor %}

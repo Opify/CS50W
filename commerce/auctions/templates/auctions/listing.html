@@ -1,16 +1,79 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>{{ item.item_name }}</h2>
+<li class="list-group-item">
     <div>
-        {{ item.item_photo }}
-        <p>{{ item.item_category }}</p>
-        <p>{{ item.item_description }}</p>
-        <p>{{ price }}</p>
+        <h4>
+            Item Name
+        </h4>
+        {{ item.item_name }}
     </div>
     <div>
-        {{ for comment in comments }}
-            <p>{{ comment.comment }}</p>
-        {{ endfor }}
+        <h4>
+            Item Description
+        </h4>
+        {{ item.item_description }}
     </div>
+    <div>
+        <h4>
+            Item Category
+        </h4>
+        {{ item.item_category }}
+    </div>
+    <div>
+        <h4>
+            Item Photo
+        </h4>
+        <img href="{{ item.item_photo }}">
+    </div>
+    <div>
+        <h4>
+            Current Price
+        </h4>
+        {{ price }}
+    </div>
+    <div>
+        {% if not item.closed %}
+        <h4>Auction Open</h4>
+        {% else %}
+        <h4>Auction Closed</h4>
+        {% endif %}
+    </div>
+</li>
+{% if user.is_authenticated %}
+{% if creator and not item.closed %}
+<form action="{% url 'close' id=item.id %}" method="POST">
+    <li class="list-group-item">
+        {% csrf_token %}
+        <input type="submit" value="Close Listing" class="btn btn-primary">
+    </li>
+</form>
+{% elif not item.closed %}
+<h4>Bid</h4>
+<form action="{% url 'listing' id=item.id %}" method="POST">
+    <li class="list-group-item">
+        {% csrf_token %}
+        <input type="number" step="any" min="{{ minimum }}" class="form-control" name="bid">
+        <input type="submit" value="Bid" class="btn btn-primary">
+    </li>
+</form>
+{% elif bid.bidding_user == request.user %}
+<p>You won the auction!</p>
+{% endif %}
+{% endif %}
+<ul class="list-group">
+    <h4>Comments</h4>
+    {% for comment in comments %}
+        <p>{{ comment.comment }}</p>
+    {% endfor %}
+</ul>
+{% if user.is_authenticated %}
+<form action="{% url 'comments' id=item.id %}" method="POST">
+    <li class="list-group-item">
+        {% csrf_token %}
+        <textarea class="form-control" name="comment"></textarea>
+        <input type="submit" value="Comment" class="btn btn-primary">
+    </li> 
+</form>
+{% endif %}
 {% endblock %}

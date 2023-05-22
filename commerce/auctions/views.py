@@ -10,9 +10,15 @@ from .models import User, Listing, Bid, Comment
 
 # Task 3 (done)
 def index(request):
+    listing_set = []
     listings = Listing.objects.all()
+    for listing in listings:
+        try:
+            listing_set.append([listing, Bid.objects.filter(pk=listing.id).order_by(-'current_amount')[0]])
+        except:
+            listing_set.append([listing, None])
     return render(request, "auctions/index.html", {
-        "listings": listings
+        "listing_set": listing_set
     })
 
 
@@ -68,37 +74,82 @@ def register(request):
         return render(request, "auctions/register.html")
 
 @login_required
-# Task 2
+# Task 2 (done)
 def create(request):
     if request.method == "POST":
-       price = float(request.POST.get("item_price"))
-       item = Listing(item_name=request.POST.get("item_name"), item_description=request.POST.get("item_description"), item_category=request.POST.get("item_category"), item_photo=request.POST.get("item_image"), starting_price=price, listing_user=request.user)
-       item.save()
-       return HttpResponseRedirect(reverse("index"))
+        price = float(request.POST.get("item_price"))
+        item = Listing(item_name=request.POST.get("item_name"), item_description=request.POST.get("item_description"), item_category=request.POST.get("item_category"), item_photo=request.POST.get("item_image"), starting_price=price, listing_user=request.user)
+        item.save()
+        return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/create.html")
     
-# Task 4
+# Task 4 (done)
 def listing(request, id):
     if request.method == "POST":
-        pass
-    else:
+        bid = float(request.POST.get("bid"))
         item = Listing.objects.get(pk=id)
-        bid = Bid.objects.get(pk=id)
-        comments = Comment.objects.get(pk=id)
-        if request.user.is_authenticated:
-            if item.listing_user == request.user.username:
-                creator = True
-            else:
-                creator = False
-        if not bid:
+        try:
+            current_amount = Bid.objects.filter(item__id=id).order_by('-current_amount').first().current_amount
+        except:
+            current_amount = item.starting_price
+        if bid > current_amount:
+            try:
+                record = Bid.objects.filter(item__id=id).order_by('-current_amount').first()
+                record.current_amount = bid
+                record.bidding_user = request.user
+                record.save()
+            except:
+                record = Bid(current_amount=bid, item=item, bidding_user=request.user)
+                record.save()
+            return HttpResponseRedirect(reverse("listing", args=[id]))
+        else:
+            return HttpResponseRedirect(reverse("listing", args=[id]))
+    else:
+        try:
+            item = Listing.objects.get(pk=id)
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        try:
+            bid = Bid.objects.filter(item__id=id).first()
+        except:
+            bid = None
+        try:
+            comments = Comment.objects.filter(item__id=id).all()
+        except:
+            comments = None
+        if item.listing_user == request.user:
+            creator = True
+        else:
+            creator = False
+        if bid == None:
             price = item.starting_price
         else:
             price = bid.current_amount
+        minimum = price + 0.01
         return render(request, "auctions/listing.html", {
             "item": item,
             "bid": bid,
             "comments":comments,
             "creator":creator,
-            "price":price
+            "price":price,
+            "minimum":minimum
         })
+    
+def comments(request, id):
+    if request.method == "POST":
+        comment_data = Comment(comment=request.POST.get("comment"))
+        comment_data.item = Listing.objects.get(pk=id)
+        comment_data.save()
+        return HttpResponseRedirect(reverse("listing", args=[id]))
+    else:
+        return HttpResponseRedirect(reverse("index"))
+    
+def close(request, id):
+    if request.method == "POST":
+        listing = Listing.objects.get(pk=id)
+        listing.closed = True
+        listing.save()
+        return HttpResponseRedirect(reverse("listing", args=[id]))
+    else:
+        return HttpResponseRedirect(reverse("index"))
