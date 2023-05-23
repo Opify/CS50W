@@ -30,7 +30,7 @@
         <h4>
             Current Price
         </h4>
-        {{ price }}
+        {{ price|floatformat:2 }}
     </div>
     <div>
         {% if not item.closed %}
