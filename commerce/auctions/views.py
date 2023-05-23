@@ -12,7 +12,7 @@ from .models import User, Listing, Bid, Comment, Watchlist
 # Task 3 (done)
 def index(request):
     listing_set = []
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(closed=False).all()
     for listing in listings:
         try:
             listing_set.append([listing, Bid.objects.filter(item__id=listing.id).order_by('-current_amount').first()])
