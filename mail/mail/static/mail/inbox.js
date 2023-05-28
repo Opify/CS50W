@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // By default, load the inbox
   load_mailbox('inbox');
 
-  // Send email (Task 1) (done)
+  // Task 1 (done)
   document.querySelector('#compose-view').addEventListener('submit', send_mail);
 });
 
@@ -25,6 +25,7 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+// Task 2 (done)
 function load_mailbox(mailbox) {
   
   // Show the mailbox and hide other views
@@ -33,6 +34,23 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  // Get mail
+  fetch(`/emails/${mailbox}`)
+  .then(response => response.json())
+  .then(emails => {
+    emails.forEach(email => {
+      const element = document.createElement('div');
+      if (email.read) {
+        element.style.backgroundColor = "LightGray"
+      } else {
+        element.style.backgroundColor = "white"
+      }
+      element.className = "border"
+      element.innerHTML = `Sender: ${email.sender}<br>Subject: ${email.subject}<br>Timestamp: ${email.timestamp}`
+      document.querySelector('#emails-view').append(element)
+    });
+  })
 }
 
 function send_mail(event) {
@@ -50,5 +68,5 @@ function send_mail(event) {
       // Print result
       console.log(result);
   });
-  return load_mailbox('inbox')
+  return load_mailbox('inbox');
 }
