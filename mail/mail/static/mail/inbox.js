@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   // create email-view div
-  const target = document.createElement('div')
-  target.id='email-view'
-  document.querySelector('body').append(target)
+  const target = document.createElement('div');
+  target.id='email-view';
+  document.querySelector('body').append(target);
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
@@ -53,11 +53,10 @@ function load_mailbox(mailbox) {
       }
       element.className = "border border-dark email";
       element.innerHTML = `Sender: ${email.sender}<br>Subject: ${email.subject}<br>Timestamp: ${email.timestamp}`;
-      element.addEventListener('click', () => read_mail(email.id))
+      element.addEventListener('click', () => read_mail(email.id));
       document.querySelector('#emails-view').append(element);
-      console.log(email);
     });
-  })
+  });
 }
 
 // Task 1 (done)
@@ -71,15 +70,11 @@ function send_mail(event) {
         body: document.querySelector('#compose-body').value
     })
   })
-  .then(response => response.json())
-  .then(result => {
-      // Print result
-      console.log(result);
-  });
+  .then(response => response.json());
   return load_mailbox('inbox');
 }
 
-// Task 3 (done)
+// Task 3, 4 (done)
 function read_mail(id) {
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
@@ -87,13 +82,34 @@ function read_mail(id) {
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(mail => {
-    // yes I am going to use innerHTML to hardcode the whole contents of the email
+    // directly write html contents
     document.querySelector('#email-view').innerHTML = 
     `<div class="form-group">From: <input disabled class="form-control" value="${mail.sender}"></div>
     <div class="form-group">To: <input class="form-control" disabled value=${mail.recipients.toString()}></div>
     <div class="form-group">Subject: <input class="form-control" disabled placeholder="Subject" value=${mail.subject}></div>
     <div class="form-group"><textarea class="form-control" disabled placeholder="Body">${mail.body}</textarea></div>
-    Timestamp: ${mail.timestamp}`
+    <div class="form-group">Timestamp: ${mail.timestamp}</div>`
+    // archive email logic
+    if (mail.archived) {
+      const element = document.createElement('button')
+      element.textContent = "Un-archive"
+      element.id = "archive"
+      document.querySelector('#email-view').append(element)
+    } else {
+      const element = document.createElement('button')
+      element.textContent = "Archive"
+      element.id = "archive"
+      document.querySelector('#email-view').append(element)
+    }
+    document.querySelector('#archive').addEventListener('click', () => {
+      fetch(`/emails/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          archived: !mail.archived
+        })
+      })
+      return load_mailbox('inbox')
+    })
   })
   .then(fetch(`/emails/${id}`, {
     method: 'PUT',
