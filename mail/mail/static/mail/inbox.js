@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // create email-view div
+  const target = document.createElement('div')
+  target.id='email-view'
+  document.querySelector('body').append(target)
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
@@ -9,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // By default, load the inbox
   load_mailbox('inbox');
 
-  // Task 1 (done)
   document.querySelector('#compose-view').addEventListener('submit', send_mail);
 });
 
@@ -17,6 +20,7 @@ function compose_email() {
 
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
   // Clear out composition fields
@@ -30,6 +34,7 @@ function load_mailbox(mailbox) {
   
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
+  document.querySelector('#email-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
@@ -42,17 +47,20 @@ function load_mailbox(mailbox) {
     emails.forEach(email => {
       const element = document.createElement('div');
       if (email.read) {
-        element.style.backgroundColor = "LightGray"
+        element.style.backgroundColor = "LightGray";
       } else {
-        element.style.backgroundColor = "white"
+        element.style.backgroundColor = "white";
       }
-      element.className = "border"
-      element.innerHTML = `Sender: ${email.sender}<br>Subject: ${email.subject}<br>Timestamp: ${email.timestamp}`
-      document.querySelector('#emails-view').append(element)
+      element.className = "border border-dark email";
+      element.innerHTML = `Sender: ${email.sender}<br>Subject: ${email.subject}<br>Timestamp: ${email.timestamp}`;
+      element.addEventListener('click', () => read_mail(email.id))
+      document.querySelector('#emails-view').append(element);
+      console.log(email);
     });
   })
 }
 
+// Task 1 (done)
 function send_mail(event) {
   event.preventDefault();
  fetch('/emails', {
@@ -69,4 +77,28 @@ function send_mail(event) {
       console.log(result);
   });
   return load_mailbox('inbox');
+}
+
+// Task 3 (done)
+function read_mail(id) {
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#email-view').style.display = 'block';
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(mail => {
+    // yes I am going to use innerHTML to hardcode the whole contents of the email
+    document.querySelector('#email-view').innerHTML = 
+    `<div class="form-group">From: <input disabled class="form-control" value="${mail.sender}"></div>
+    <div class="form-group">To: <input class="form-control" disabled value=${mail.recipients.toString()}></div>
+    <div class="form-group">Subject: <input class="form-control" disabled placeholder="Subject" value=${mail.subject}></div>
+    <div class="form-group"><textarea class="form-control" disabled placeholder="Body">${mail.body}</textarea></div>
+    Timestamp: ${mail.timestamp}`
+  })
+  .then(fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      read: true
+    })
+  }))
 }
