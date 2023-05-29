@@ -71,7 +71,7 @@ function send_mail(event) {
     })
   })
   .then(response => response.json());
-  return load_mailbox('inbox');
+  load_mailbox('inbox');
 }
 
 // Task 3, 4 (done)
@@ -86,7 +86,7 @@ function read_mail(id) {
     document.querySelector('#email-view').innerHTML = 
     `<div class="form-group">From: <input disabled class="form-control" value="${mail.sender}"></div>
     <div class="form-group">To: <input class="form-control" disabled value=${mail.recipients.toString()}></div>
-    <div class="form-group">Subject: <input class="form-control" disabled placeholder="Subject" value=${mail.subject}></div>
+    <div class="form-group">Subject: ${mail.subject}</div>
     <div class="form-group"><textarea class="form-control" disabled placeholder="Body">${mail.body}</textarea></div>
     <div class="form-group">Timestamp: ${mail.timestamp}</div>`
     // archive email logic
@@ -108,7 +108,7 @@ function read_mail(id) {
           archived: !mail.archived
         })
       });
-      return load_mailbox('inbox');
+      load_mailbox('inbox');
     });
     const reply = document.createElement('button');
     reply.textContent = "Reply";
