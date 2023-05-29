@@ -91,15 +91,15 @@ function read_mail(id) {
     <div class="form-group">Timestamp: ${mail.timestamp}</div>`
     // archive email logic
     if (mail.archived) {
-      const element = document.createElement('button')
-      element.textContent = "Un-archive"
-      element.id = "archive"
-      document.querySelector('#email-view').append(element)
+      const archive = document.createElement('button');
+      archive.textContent = "Un-archive";
+      archive.id = "archive";
+      document.querySelector('#email-view').append(archive);
     } else {
-      const element = document.createElement('button')
-      element.textContent = "Archive"
-      element.id = "archive"
-      document.querySelector('#email-view').append(element)
+      const archive = document.createElement('button');
+      archive.textContent = "Archive";
+      archive.id = "archive";
+      document.querySelector('#email-view').append(archive);
     }
     document.querySelector('#archive').addEventListener('click', () => {
       fetch(`/emails/${id}`, {
@@ -107,9 +107,14 @@ function read_mail(id) {
         body: JSON.stringify({
           archived: !mail.archived
         })
-      })
-      return load_mailbox('inbox')
-    })
+      });
+      return load_mailbox('inbox');
+    });
+    const reply = document.createElement('button');
+    reply.textContent = "Reply";
+    reply.id = "reply";
+    reply.addEventListener('click', () => reply_email(mail.sender, mail.subject, mail.body, mail.timestamp));
+    document.querySelector('#email-view').append(reply);
   })
   .then(fetch(`/emails/${id}`, {
     method: 'PUT',
@@ -117,4 +122,18 @@ function read_mail(id) {
       read: true
     })
   }))
+}
+
+// Task 5 (done)
+function reply_email(sender, subject, body, timestamp) {
+  compose_email();
+  document.querySelector('#compose-recipients').value = sender;
+  // use regex to check if Re is in subject field
+  const regex = /^Re: /;
+  if (regex.test(subject)) {
+    document.querySelector('#compose-subject').value = subject
+  } else {
+    document.querySelector('#compose-subject').value = `Re: ${subject}`
+  }
+  document.querySelector('#compose-body').value = `\nOn ${timestamp} ${sender} wrote:\n${body}`
 }
