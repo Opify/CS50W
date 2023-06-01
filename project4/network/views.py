@@ -9,8 +9,12 @@ from datetime import datetime
 from .models import *
 
 
+# Task 2 (done)
 def index(request):
-    return render(request, "network/index.html")
+    posts = Post.objects.all().order_by('-timestamp')
+    return render(request, "network/index.html", {
+        "posts": posts
+    })
 
 
 def login_view(request):
@@ -64,7 +68,7 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-# Task 1
+# Task 1 (done)
 @login_required
 def create_post(request):
     if request.method == "POST":
