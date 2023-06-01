@@ -3,8 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
 
-from .models import User
+from .models import *
 
 
 def index(request):
@@ -61,3 +63,13 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+# Task 1
+@login_required
+def create_post(request):
+    if request.method == "POST":
+        post = Post(username=request.user, content=request.POST["content"], timestamp=datetime.now())
+        post.save()
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return render(request, "network/create.html")

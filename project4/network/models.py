@@ -1,6 +1,16 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
+from django.forms import ModelForm
 
 
 class User(AbstractUser):
     pass
+
+class Post(models.Model):
+    username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField()
+    likes = models.IntegerField(default=0)
+    def __str__(self):
+        return f"Username: {self.username}, content: {self.content}, timestamp: {self.timestamp}, likes: {self.likes}"
