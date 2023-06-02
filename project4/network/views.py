@@ -111,3 +111,13 @@ def profile(request, user):
                     "following": following
                 })
         return HttpResponseRedirect(reverse("index"))
+
+# Task 4 (done)
+def following(request):
+    # Show all posts from those that user follows
+    # Get list of those followed
+    followlist = Following.objects.filter(following_user=request.user).values_list('followed_user')
+    posts = Post.objects.filter(username__in=followlist).all().order_by('-timestamp')
+    return render(request, "network/following.html", {
+        "posts": posts
+    })
