@@ -1,6 +1,19 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+<h2>{{ posts.0.username }}</h2>
+{% if user.is_authenticated %}
+{% if request.user != posts.0.username %}
+<form action="/profile/{{ posts.0.username }}" method="POST">
+    {% csrf_token %}
+    {% if not following %}
+    <input type="submit" value="Follow">
+    {% else %}
+    <input type="submit" value="Unfollow">
+    {% endif %}
+</form>
+{% endif %}
+{% endif %}
     {% for post in posts %}
         <div class="border border-dark">
             <h4>{{ post.username }}</h4>
