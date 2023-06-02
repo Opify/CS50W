@@ -115,6 +115,7 @@ def profile(request, user):
         return HttpResponseRedirect(reverse("index"))
 
 # Task 4 (done)
+@login_required
 def following(request):
     # Show all posts from those that user follows
     # Get list of those followed
