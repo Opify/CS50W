@@ -99,21 +99,19 @@ def profile(request, user):
     # Display profile
     else:
         # Checks if username given exists. If invalid, return to index page
-        users = User.objects.values()
-        for i in range(len(users)):
-            if user == users[i]["username"]:
-                try:
-                    Following.objects.filter(following_user=request.user, followed_user=User.objects.get(username=user)).get()
-                except:
-                    following = False
-                else:
-                    following = True
-                posts = Post.objects.filter(username=User.objects.get(username=user)).order_by('-timestamp').all()
-                page = paginate(posts, request)
-                return render(request, "network/profile.html", {
-                    "posts": page,
-                    "following": following
-                })
+        if user in User.objects.values_list('username', flat=True):
+            try:
+                Following.objects.filter(following_user=request.user, followed_user=User.objects.get(username=user)).get()
+            except:
+                following = False
+            else:
+                following = True
+            posts = Post.objects.filter(username=User.objects.get(username=user)).order_by('-timestamp').all()
+            page = paginate(posts, request)
+            return render(request, "network/profile.html", {
+                "posts": page,
+                "following": following
+            })
         return HttpResponseRedirect(reverse("index"))
 
 # Task 4 (done)
