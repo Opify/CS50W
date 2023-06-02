@@ -5,17 +5,21 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from datetime import datetime
 
 from .models import *
 
 
-# Task 2 (done)
+# Tasks 2, 5 (done)
 def index(request):
     # Show all posts
     posts = Post.objects.all().order_by('-timestamp')
+    paged = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page = paged.get_page(page_number)
     return render(request, "network/index.html", {
-        "posts": posts
+        "posts": page
     })
 
 
@@ -82,7 +86,7 @@ def create_post(request):
     else:
         return render(request, "network/create.html")
     
-# Task 3 (done)
+# Tasks 3, 5 (done)
 def profile(request, user):
     # Handle follow logic
     if request.method == "POST":
@@ -106,18 +110,25 @@ def profile(request, user):
                     following = False
                 else:
                     following = True
+                posts = Post.objects.filter(username=User.objects.get(username=user)).order_by('-timestamp').all()
+                paged = Paginator(posts, 10)
+                page_number = request.GET.get("page")
+                page = paged.get_page(page_number)
                 return render(request, "network/profile.html", {
-                    "posts": Post.objects.filter(username=User.objects.get(username=user)).order_by('-timestamp').all(),
+                    "posts": page,
                     "following": following
                 })
         return HttpResponseRedirect(reverse("index"))
 
-# Task 4 (done)
+# Tasks 4, 5 (done)
 def following(request):
     # Show all posts from those that user follows
     # Get list of those followed
     followlist = Following.objects.filter(following_user=request.user).values_list('followed_user')
     posts = Post.objects.filter(username__in=followlist).all().order_by('-timestamp')
+    paged = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page = paged.get_page(page_number)
     return render(request, "network/following.html", {
-        "posts": posts
+        "posts": page
     })
