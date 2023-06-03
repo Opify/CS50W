@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -146,5 +146,46 @@ def edit(request, id):
         post.save()
         return HttpResponse(200)
     # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))
+    
+# Task 7 (done)
+def like(request, id):
+    try:
+        Post.objects.filter(id=id)
+    except:
+        return HttpResponse(300)
+    # handle getting likes
+    if request.method == "GET":
+        likes = Like.objects.filter(post=id).distinct().count()
+        return JsonResponse({"likes": likes})
+    # handle updating likes
+    elif request.method == "POST":
+        try:
+            liked = Like.objects.filter(like_user=request.user, post=Post.objects.get(pk=id)).get()
+        except:
+            likes = Like(like_user=request.user, post=Post.objects.get(pk=id))
+            likes.save()
+        else:
+            liked.delete()
+        return HttpResponse(200)
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))
+    
+def check_like(request, id):
+    try:
+        Post.objects.filter(id=id)
+    except:
+        return HttpResponse(300)
+    # handle checking if user has liked the post
+    if request.method == "GET":
+        try:
+            Like.objects.filter(like_user=request.user, post=Post.objects.get(pk=id)).get()
+        except:
+            return JsonResponse({"liked": "false"})
+        else:
+            return JsonResponse({"liked": "true"})
+    # Reject all other methods
     else:
         return HttpResponseRedirect(reverse("index"))

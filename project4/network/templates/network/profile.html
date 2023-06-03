@@ -15,12 +15,14 @@
 {% endif %}
 {% endif %}
     {% for post in posts %}
-        <div class="border border-dark" id="{{ post.id }}">
+        <div class="border border-dark post-div" id="{{ post.id }}">
             <a href="{% url 'profile' post.username %}"><h4>{{ post.username }}</h4></a>
             <p class="timestamp">{{ post.timestamp }}</p>
             <p class="content">{{ post.content }}</p>
-            <p class="likes">Likes: {{ post.likes }}</p>
+            Likes: <p class="likes">{{ post.likes }}</p>
+            {% if user.is_authenticated %}
             <button class="like">Like</button>
+            {% endif %}
             {% if request.user == post.username %}
             <button class="edit">Edit</button>
             {% endif %}
