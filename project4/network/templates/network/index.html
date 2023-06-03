@@ -2,12 +2,15 @@
 
 {% block body %}
     {% for post in posts %}
-        <div class="border border-dark">
-            <h4>{{ post.username }}</h4>
-            <p>{{ post.timestamp }}</p>
-            <p>{{ post.content }}</p>
-            <p>Likes: {{ post.likes }}</p>
-            <button id="{{ post.id }}" class="like">Like</button>
+        <div class="border border-dark" id="{{ post.id }}">
+            <a href="{% url 'profile' post.username %}"><h4>{{ post.username }}</h4></a>
+            <p class="timestamp">{{ post.timestamp }}</p>
+            <p class="content">{{ post.content }}</p>
+            <p class="likes">Likes: {{ post.likes }}</p>
+            <button class="like">Like</button>
+            {% if request.user == post.username %}
+            <button class="edit">Edit</button>
+            {% endif %}
         </div>
     {% endfor %}
     <div class="pagination d-flex justify-content-center">

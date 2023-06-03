@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from datetime import datetime
+import json
 
 from .models import *
 
@@ -131,3 +132,19 @@ def paginate(content, request):
     paged = Paginator(content, 10)
     page_number = request.GET.get("page")
     return paged.get_page(page_number)
+
+# Task 6 (done)
+def edit(request, id):
+    try:
+        post = Post.objects.filter(id=id).get()
+    except:
+        return HttpResponse(403)
+    if request.method == "PUT":
+        body = json.loads(request.body)
+        content = body.get("content")
+        post.content = content
+        post.save()
+        return HttpResponse(200)
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))
