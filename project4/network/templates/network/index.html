@@ -6,7 +6,7 @@
             <a href="{% url 'profile' post.username %}"><h4>{{ post.username }}</h4></a>
             <p class="timestamp">{{ post.timestamp }}</p>
             <p class="content">{{ post.content }}</p>
-            Likes: <p class="likes">{{ post.likes }}</p>
+            Likes: <p class="likes"></p>
             {% if user.is_authenticated %}
             <button class="like">Like</button>
             {% endif %}
