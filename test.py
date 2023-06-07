@@ -36,9 +36,10 @@ def check_changes(old, new):
                     # As long as the sentence is somewhere, we can 
                     # take it as unedited. If there are no matches,
                     # it is removed/edited
-                    if (old[i][j] == new[k][l]):
+                    if (old[i][j] == new[k][l]) and (i == k):
                         found = True
             if not found and not repeated:
+                repeated = True
                 line_number = 0
                 for j in range(i):
                     line_number += len(old[j])
@@ -54,9 +55,10 @@ def check_changes(old, new):
                     # As long as the sentence is somewhere, we can 
                     # take it as unedited. If there are no matches,
                     # it is added/edited
-                    if (new[i][j] == old[k][l]):
+                    if (new[i][j] == old[k][l]) and (i == k):
                         found = True
             if not found and not repeated:
+                repeated = True
                 line_number = 0
                 for j in range(i):
                     line_number += len(new[j])
