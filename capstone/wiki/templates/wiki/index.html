@@ -1,0 +1,17 @@
+{% extends "wiki/layout.html" %}
+
+{% block title %}
+    Wiki
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist as the default page-->
+    <h1>All Pages</h1>
+
+    <ul>
+        {% for entry in entries %}
+            <li><a href="/wiki/{{ entry }}">{{ entry }}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
