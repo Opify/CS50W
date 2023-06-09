@@ -1,0 +1,22 @@
+{% extends "wiki/layout.html" %}
+
+{% block title %}
+Create article
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when creating an article-->
+    <h1>Create article</h1>
+<form action="create" method="post">
+    {% csrf_token %}
+    <div>
+        <input type="text" name="title" placeholder="Title" id="create-title" required>
+    </div>
+    <div>
+        <textarea name="content" placeholder="Lorem Ipsum" id="create-content"></textarea>    
+    </div>
+    <div>
+        <input type="submit" value="Submit">
+    </div>
+</form>
+{% endblock %}

@@ -15,14 +15,24 @@
                 <form action="query">
                     <input class="search" type="text" name="q" placeholder="Search Encyclopedia">
                 </form>
+                {% if not user.is_authenticated %}
+                <div>
+                    <a href="{% url 'login' %}">Login</a>
+                </div>
+                <div>
+                    <a href="{% url 'register' %}">Register Account</a>
+                </div>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <div>
+                    <a href="{% url 'logout' %}">Logout</a>
+                </div>
+                {% endif %}
                 <div>
                     <a href="{% url 'index' %}">Home</a>
                 </div>
                 <div>
-                    <a href="{% url 'create' %}">Create New Page</a>
-                </div>
-                <div>
-                    <a href="/wiki/{{ random }}">Random Page</a>
+                    <a href="{% url 'create' %}">Create Article</a>
                 </div>
                 {% block nav %}
                 {% endblock %}

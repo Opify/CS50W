@@ -9,8 +9,8 @@
     <h1>All Pages</h1>
 
     <ul>
-        {% for entry in entries %}
-            <li><a href="/wiki/{{ entry }}">{{ entry }}</a></li>
+        {% for article in articles %}
+            <li><a href="{% url 'article' article.title %}">{{ article.title }}</a></li>
         {% endfor %}
     </ul>
 
