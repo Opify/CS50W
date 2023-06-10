@@ -9,12 +9,14 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 import json
 import markdown
+import re
 
 from . import util
 from .models import *
 
 
 # Create your views here.
+# Display all articles
 def index(request):
     articles = Article.objects.order_by('-create_timestamp').all()
     return render(request, "wiki/index.html", {
@@ -72,6 +74,7 @@ def create(request):
     if request.method == "POST":
         title = request.POST.get("title")
         content = request.POST.get("content")
+        # checks if article already exists via title
         try:
             Article.objects.filter(title=title).get()
         except:
@@ -84,6 +87,7 @@ def create(request):
     else:
         return render(request, "wiki/create.html")
 
+# Display article and coments
 def article(request, title):
     try:
         article = Article.objects.filter(title=title).get()
@@ -96,6 +100,7 @@ def article(request, title):
             "content": content
         })
 
+# Display lists of edits for an article
 def edits(request, title):
     try:
         edits = Edit.objects.filter(article=Article.objects.filter(title=title).get()).all()
@@ -105,4 +110,57 @@ def edits(request, title):
         return render(request, "wiki/edits.html", {
             "edits": edits,
             "title": title
+        })
+
+# handle following request and getting to following
+@login_required
+def following(request):
+    # handle following page
+    if request.method == "GET":
+        try:
+            following = Following.objects.filter(user=request.user).all()
+        except:
+            following = None
+        return render(request, "wiki/following.html", {
+            "following": following
+        })
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))@login_required
+
+def follow(request, id):
+    # handle following request
+    if request.method == "POST":
+        try:
+            following = Following.objects.filter(article=Article.objects.get(pk=id), user=request.user).get()
+        except:
+            following = Following(article=Article.objects.get(pk=id), user=request.user)
+            following.save()
+            return HttpResponse(200)
+        else:
+            following.delete()
+            return HttpResponse(200)
+    # check if follow exists
+    else:
+        try:
+            following = Following.objects.filter(article=Article.objects.get(pk=id), user=request.user).get()
+        except:
+            return JsonResponse({"followed": "false"})
+        else:
+            return JsonResponse({"followed": "true"})
+
+# handle query results
+def query(request):
+    query = request.GET["q"]
+    articles = Article.objects.values_list('title', flat=True)
+    if query in articles:
+        return HttpResponseRedirect(reverse("article", args=[query]))
+    else:
+        suggestions = []
+        # use regex to generate list of suggested articles
+        for entry in articles:
+            if re.search(query, entry) is not None:
+                suggestions.append(entry)
+        return render(request, "wiki/query.html", {
+            "results": suggestions
         })

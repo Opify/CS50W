@@ -9,8 +9,15 @@
 <!-- This page should be seen when one finds a valid article-->
 <div id="article=view">
     {{ content|safe }}
+</div>
+<div>
     <form action="{% url 'edits' article.title %}">
-        <input type="submit" value="Edit article">
+        <input type="submit" value="View edits for article">
     </form>
+    {% if user.is_authenticated %}
+    <form action="{% url 'follow' article.id %}" method="POST">
+        <input type="submit" value="Follow" id="{{ article.id }}" class="follow">
+    </form>
+    {% endif %}
 </div>
 {% endblock %}
