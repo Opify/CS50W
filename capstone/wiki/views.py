@@ -16,7 +16,7 @@ from .models import *
 
 # Create your views here.
 def index(request):
-    articles = Article.objects.order_by('-timestamp').all()
+    articles = Article.objects.order_by('-create_timestamp').all()
     return render(request, "wiki/index.html", {
         "articles": articles
     })
@@ -75,7 +75,7 @@ def create(request):
         try:
             Article.objects.filter(title=title).get()
         except:
-            article = Article(article_user=request.user, title=title, content=content, timestamp=datetime.now())
+            article = Article(article_user=request.user, title=title, content=content, create_timestamp=datetime.now())
             article.save()
             return HttpResponseRedirect(reverse("index"))
         else:
@@ -94,4 +94,15 @@ def article(request, title):
         return render(request, "wiki/article.html", {
             "article": article,
             "content": content
+        })
+
+def edits(request, title):
+    try:
+        edits = Edit.objects.filter(article=Article.objects.filter(title=title).get()).all()
+    except:
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return render(request, "wiki/edits.html", {
+            "edits": edits,
+            "title": title
         })

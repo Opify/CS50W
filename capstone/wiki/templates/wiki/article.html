@@ -5,10 +5,12 @@
 {% endblock %}
 
 {% block body %}
+<h1>{{ article.title }}</h1>
 <!-- This page should be seen when one finds a valid article-->
-{{ content|safe }}
-<form action="edit">
-    <input type="hidden" value="{{ title }}" name="article">
-    <input type="submit" value="Edit article">
-</form>
+<div id="article=view">
+    {{ content|safe }}
+    <form action="{% url 'edits' article.title %}">
+        <input type="submit" value="Edit article">
+    </form>
+</div>
 {% endblock %}

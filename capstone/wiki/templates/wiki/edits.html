@@ -1,0 +1,21 @@
+{% extends "wiki/layout.html" %}
+
+{% block title %}
+    Edits
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist as the default page-->
+    <h1>Edits for {{ title }}</h1>
+
+    <ul>
+        {% for edit in edits %}
+            <li class="border-dark">
+                <div><a href="{% url 'edit' edit.id %}">{{ edit.title }}</a></div>
+                <div>{{ edit.timestamp }}</div>
+                <div><button class="Approve d-flex justify-content-around" value="approve"><button class="reject" value="Reject"></div>
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

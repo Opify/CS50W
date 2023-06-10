@@ -15,13 +15,14 @@ class Article(models.Model):
         return f"Content: {self.content}"
 
 class Comment(models.Model):
-    article_id = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comment")
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comment")
     comment_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user")
     comment = models.TextField()
 
 class Edit(models.Model):
-    article_id = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="edit")
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="edit")
     edit_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="edit_user")
+    title = models.CharField(max_length=100)
     content = models.TextField()
     timestamp = models.DateTimeField()
     # 0 means pending, 1 means approved, 2 means rejected
