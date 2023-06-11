@@ -8,6 +8,7 @@ urlpatterns = [
     path("create", views.create, name="create"),
     path("wiki/<str:title>", views.article, name="article"),
     path("edits/<str:title>", views.edits, name="edits"),
+    path("comment/<int:id>", views.comment, name="comment"),
     path("follow/<int:id>", views.follow, name="follow"),
     path("following", views.following, name="following"),
     path("query", views.query, name="query")

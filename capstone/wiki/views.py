@@ -78,7 +78,7 @@ def create(request):
         try:
             Article.objects.filter(title=title).get()
         except:
-            article = Article(article_user=request.user, title=title, content=content, create_timestamp=datetime.now())
+            article = Article(user=request.user, title=title, content=content, create_timestamp=datetime.now())
             article.save()
             return HttpResponseRedirect(reverse("index"))
         else:
@@ -94,10 +94,15 @@ def article(request, title):
     except:
         return HttpResponseRedirect(reverse("index"))
     else:
+        try:
+            comments = Comment.objects.filter(article=article).order_by('-timestamp').all()
+        except:
+            comments = None
         content = markdown.markdown(article.content)
         return render(request, "wiki/article.html", {
             "article": article,
-            "content": content
+            "content": content,
+            "comments": comments
         })
 
 # Display lists of edits for an article
@@ -164,3 +169,17 @@ def query(request):
         return render(request, "wiki/query.html", {
             "results": suggestions
         })
+    
+# handle uploading comments
+def comment(request, id):
+    if request.method == "POST":
+        body = json.loads(request.body)
+        content = body.get("comment")
+        timestamp = datetime.now()
+        user = request.user
+        comment = Comment(article=Article.objects.get(pk=id), user=user, comment=content, timestamp=timestamp)
+        comment.save()
+        return JsonResponse({"timestamp": timestamp.strftime('%B %d, %Y, %I:%M %p'), "user": request.user.username})
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))

@@ -12,12 +12,13 @@ class Article(models.Model):
     create_timestamp = models.DateTimeField()
     edit_timestamp = models.DateTimeField(blank=True, null=True)
     def __str__(self):
-        return f"Content: {self.content}"
+        return f"Title: {self.title}, Content: {self.content}"
 
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comment")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user")
     comment = models.TextField()
+    timestamp = models.DateTimeField()
 
 class Edit(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="edit")
@@ -35,4 +36,6 @@ class Edit(models.Model):
 class Following(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="following")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="following_user")
+    def __str__(self):
+        return f"Article: {self.article}"
  
