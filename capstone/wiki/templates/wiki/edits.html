@@ -8,14 +8,32 @@
 <!-- This page should exist as the default page-->
     <h1>Edits for {{ title }}</h1>
 
-    <ul>
-        {% for edit in edits %}
-            <li class="border-dark">
-                <div><a href="{% url 'edit' edit.id %}">{{ edit.title }}</a></div>
-                <div>{{ edit.timestamp }}</div>
-                <div><button class="Approve d-flex justify-content-around" value="approve"><button class="reject" value="Reject"></div>
-            </li>
+        {% for change in changes %}
+            <div class="border border-dark">
+                <p><a href="{% url 'edit' change.0.id %}">{{ change.0.title }}</a></p>
+                <p>{{ change.0.timestamp }}</p>
+                {% if change.1.0 %}
+                <h3>Sentences added</h3>
+                {% for addition in change.1.0 %}
+                <p>Line number: {{ addition.line_number }}</p>
+                <p>{{ addition.sentence }}</p>
+                {% endfor %}
+                {% endif %}
+                {% if change.1.1 %}
+                <h3>Sentences removed</h3>
+                {% for removal in change.1.1 %}
+                <p>Line number: {{ removal.line_number }}</p>
+                <p>{{ removal.sentence }}</p>
+                {% endfor %}
+                {% endif %}
+                {% if change.0.status == 0 %}
+                <p>Status: Pending</p>
+                {% elif change.0.status == 1 %}
+                <p>Status: Accepted</p>
+                {% elif change.0.status == 2 %}
+                <p>Status: Rejected</p>
+                {% endif %}
+            </div>
         {% endfor %}
-    </ul>
 
 {% endblock %}

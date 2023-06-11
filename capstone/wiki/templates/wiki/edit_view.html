@@ -7,7 +7,7 @@
 {% block body %}
 <h1>{{ article.title }}</h1>
 <!-- This page should be seen when one finds a valid article-->
-<div id="article-view">
+<div id="article=view">
     {{ content|safe }}
     <p>Created on: {{ article.create_timestamp }}</p>
     {% if article.edit_timestamp != None %}

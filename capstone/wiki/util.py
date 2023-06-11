@@ -2,6 +2,9 @@ import re
 
 
 def track_changes(old, new):
+    """Takes in old and new body of text and checks if there is any changes in the contents of the body. 
+    Returns array with sentences added followed by sentences removed. 
+    Does NOT track if sentences have been moved."""
     old_array = body_to_array(old)
     new_array = body_to_array(new)
     return check_changes(old_array, new_array)

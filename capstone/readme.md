@@ -6,7 +6,7 @@ Index (done)\
 Following (done)\
 Comments (done)\
 Searchbar (done)\
-User group for approvers\
-Edit log of article\
-Edits\
+Edit log of article (done)\
+Edits (done)\
 Approval/rejection of edits\
+Mobile-responsive

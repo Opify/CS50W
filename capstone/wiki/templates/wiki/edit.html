@@ -1,0 +1,22 @@
+{% extends "wiki/layout.html" %}
+
+{% block title %}
+Edit article
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when creating an article-->
+    <h1>Edit article</h1>
+<form action="{% url 'edit' article.title %}" method="post">
+    {% csrf_token %}
+    <div>
+        <input type="text" name="title" placeholder="Summary of changes" id="create-title" required>
+    </div>
+    <div>
+        <textarea name="content" placeholder="Lorem Ipsum" id="create-content">{{ article.content }}</textarea>    
+    </div>
+    <div>
+        <input type="submit" value="Propose edits">
+    </div>
+</form>
+{% endblock %}

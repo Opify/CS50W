@@ -108,14 +108,48 @@ def article(request, title):
 # Display lists of edits for an article
 def edits(request, title):
     try:
-        edits = Edit.objects.filter(article=Article.objects.filter(title=title).get()).all()
+        article = Article.objects.filter(title=title).get()
+        edits = Edit.objects.filter(article=article).all()
     except:
         return HttpResponseRedirect(reverse("index"))
     else:
+        changes = []
+        for edit in edits:
+            list = []
+            list.append(edit)
+            list.append(util.track_changes(article.content, edit.content))
+            changes.append(list)
         return render(request, "wiki/edits.html", {
-            "edits": edits,
+            "changes": changes,
             "title": title
         })
+
+# handle edits
+def edit(request, title):
+    # handle edit logic
+    if request.method == "POST":
+        try:
+            article = Article.objects.filter(title=title).get()
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            edit = Edit(article=article, user=request.user, title=request.POST.get("title"), content=request.POST.get("content"), timestamp=datetime.now(), status = 0)
+            edit.save()
+            return HttpResponseRedirect(reverse("article", args=[title]))
+    # handle edit page
+    else:
+        try:
+            article = Article.objects.filter(title=title).get()
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "wiki/edit.html", {
+                "article": article
+            })
+
+# Display view edits and approval/rejection
+def edit_view(request, id):
+    pass
 
 # handle following request and getting to following
 @login_required

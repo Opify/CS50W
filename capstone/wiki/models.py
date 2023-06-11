@@ -4,7 +4,6 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
-# Handles both creation and edits of an article
 class Article(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="article_user")
     title = models.CharField(max_length=100)

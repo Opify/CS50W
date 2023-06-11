@@ -18,5 +18,10 @@ html, body {
 }
 
 .divider {
-    width: 90%;
+    width: 95%;
+}
+
+.border {
+    padding-left: 5px;
+    padding-right: 5px;
 }

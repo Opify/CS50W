@@ -7,6 +7,7 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("create", views.create, name="create"),
     path("wiki/<str:title>", views.article, name="article"),
+    path("edit/<str:title>", views.edit, name="edit"),
     path("edits/<str:title>", views.edits, name="edits"),
     path("comment/<int:id>", views.comment, name="comment"),
     path("follow/<int:id>", views.follow, name="follow"),
