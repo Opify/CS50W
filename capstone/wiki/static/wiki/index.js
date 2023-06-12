@@ -17,6 +17,12 @@ document.addEventListener('DOMContentLoaded', function() {
     catch {
         // Why cant we have a pass 
     }
+    try {
+        document.querySelectorAll('.approve').forEach((elem) => elem.addEventListener('click', (event) => approve(event)))
+    }
+    catch {
+        // Why cant we have a pass 
+    }
 })
 
 function follow(event) {
@@ -74,4 +80,18 @@ function comment(event) {
         const root = document.querySelector('#comment-view')
         root.prepend(div)
         })
+}
+
+function approve(event) {
+    const id = event.target.parentElement.id
+    const action = event.target.id
+    fetch(`/view_edit/${id}`, {
+        method: "POST",
+        headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
+        body: JSON.stringify({
+            action: action
+        }),
+        mode: 'same-origin'
+    })
+    event.target.parentElement.style.display = 'none'
 }

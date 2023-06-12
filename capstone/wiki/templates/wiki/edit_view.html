@@ -1,48 +1,19 @@
 {% extends "wiki/layout.html" %}
 
 {% block title %}
-    {{ article.title }}
+    {{ edit.title }}
 {% endblock %}
 
 {% block body %}
-<h1>{{ article.title }}</h1>
+<h1>{{ edit.title }}</h1>
 <!-- This page should be seen when one finds a valid article-->
-<div id="article=view">
+<div id="edit-view">
     {{ content|safe }}
-    <p>Created on: {{ article.create_timestamp }}</p>
-    {% if article.edit_timestamp != None %}
-    <p>Edited on: {{ article.edit_timestamp }}</p>
+</div>
+<div id="{{ edit.id }}">
+    {% if edit.status == 0 and user.is_superuser %}
+    <button id="accept" class="approve">Accept</button>
+    <button id="reject" class="approve">Reject</button>
     {% endif %}
-</div>
-<div>
-    <form action="{% url 'edits' article.title %}">
-        <input type="submit" value="View edits for article">
-    </form>
-    {% if user.is_authenticated %}
-    <form action="{% url 'edit' article.title %}">
-        <input type="submit" value="Edit article">
-    </form>
-    <form action="{% url 'follow' article.id %}" method="POST">
-        <input type="submit" value="Follow" id="{{ article.id }}" class="follow">
-    </form>
-    {% endif %}
-</div>
-<hr class="divider">
-<h2>Comments</h2>
-<div>
-    <textarea placeholder="Comment here" id="comment"></textarea>
-    <br>
-    <button id="{{ article.id }}" class="comment-button">Comment</button>
-</div>
-<div id="comment-view">
-    {% for comment in comments %}
-    <div class="border border-black">
-        <p>{{ comment.user }}</p>
-        <p>{{ comment.timestamp }}</p>
-        <p>{{ comment.comment }}</p>
-    </div>
-    {% empty %}
-    <p id="no-comment">There are no comments!</p>
-    {% endfor %}
 </div>
 {% endblock %}

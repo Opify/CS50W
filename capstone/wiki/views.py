@@ -15,7 +15,6 @@ from . import util
 from .models import *
 
 
-# Create your views here.
 # Display all articles
 def index(request):
     articles = Article.objects.order_by('-create_timestamp').all()
@@ -109,7 +108,7 @@ def article(request, title):
 def edits(request, title):
     try:
         article = Article.objects.filter(title=title).get()
-        edits = Edit.objects.filter(article=article).all()
+        edits = Edit.objects.filter(article=article).order_by('-timestamp').all()
     except:
         return HttpResponseRedirect(reverse("index"))
     else:
@@ -149,7 +148,39 @@ def edit(request, title):
 
 # Display view edits and approval/rejection
 def edit_view(request, id):
-    pass
+    if request.method == "POST":
+        body = json.loads(request.body)
+        action = body.get("action")
+        edit = Edit.objects.get(pk=id)
+        if action == "accept":
+            edit.status = 1
+            edit.approving_user = request.user
+            content = edit.content
+            timestamp = datetime.now()
+            article = edit.article
+            article.content = content
+            article.edit_timestamp = timestamp
+            edit.save()
+            article.save()
+            return HttpResponse(200)
+        elif action == "reject":
+            edit.status = 2
+            edit.approving_user = request.user
+            edit.save()
+            return HttpResponse(200)
+        print(f"{action}")
+        return HttpResponseRedirect(reverse('edit_view', args=[id]))
+    else:
+        try:
+            edit = Edit.objects.get(pk=id)
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            content = markdown.markdown(edit.content)
+            return render(request, "wiki/edit_view.html", {
+                "edit": edit,
+                "content": content
+            })
 
 # handle following request and getting to following
 @login_required
@@ -165,8 +196,9 @@ def following(request):
         })
     # reject all other methods
     else:
-        return HttpResponseRedirect(reverse("index"))@login_required
+        return HttpResponseRedirect(reverse("index"))
 
+@login_required
 def follow(request, id):
     # handle following request
     if request.method == "POST":

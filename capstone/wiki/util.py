@@ -11,13 +11,12 @@ def track_changes(old, new):
 
 def body_to_array(body):
     # Turn body into array of paragraphs
-    paragraphs = re.split(r'\n', body)
+    paragraphs = re.split(r'\n+', body)
     sentences = []
     # Turn paragraphs into sentences. Each sentence is in an array
     # nested in another array.
     for paragraph in paragraphs:
         sentences.append(re.split(r'(?<=[\.\!\?])\s+', paragraph.strip()))
-    print(sentences)
     return sentences
 
 def check_changes(old, new):
@@ -38,8 +37,8 @@ def check_changes(old, new):
             if not found and not repeated:
                 repeated = True
                 line_number = 0
-                for j in range(i):
-                    line_number += len(old[j])
+                for m in range(i):
+                    line_number += len(old[m])
                 line_number += j + 1
                 removed.append({"line_number": line_number, "sentence": old[i][j]})
     # Next, check if any paragraphs were added
@@ -57,8 +56,8 @@ def check_changes(old, new):
             if not found and not repeated:
                 repeated = True
                 line_number = 0
-                for j in range(i):
-                    line_number += len(new[j])
+                for m in range(i):
+                    line_number += len(new[m])
                 line_number += j + 1
-                added.append({"line_number": line_number, "sentence": new[i][j]})            
+                added.append({"line_number": line_number, "sentence": new[i][j]})
     return [added, removed]

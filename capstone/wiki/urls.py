@@ -9,6 +9,7 @@ urlpatterns = [
     path("wiki/<str:title>", views.article, name="article"),
     path("edit/<str:title>", views.edit, name="edit"),
     path("edits/<str:title>", views.edits, name="edits"),
+    path("view_edit/<int:id>", views.edit_view, name="edit_view"),
     path("comment/<int:id>", views.comment, name="comment"),
     path("follow/<int:id>", views.follow, name="follow"),
     path("following", views.following, name="following"),
