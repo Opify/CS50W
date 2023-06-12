@@ -9,4 +9,4 @@ Searchbar (done)\
 Edit log of article (done)\
 Edits (done)\
 Approval/rejection of edits (done)\
-Mobile-responsive
+Mobile-responsive (done)

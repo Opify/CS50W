@@ -1,11 +1,26 @@
+/* media query at 768px */
+
 html, body {
     max-width: 100%;
     overflow-x: hidden;
 }
 
-.sidebar {
-    background-color: #f0f0f0;
-    height: 100vh;
+@media (max-width: 767.98px) {
+    .sidebar {
+        background-color: #f0f0f0;
+        min-height: max-content;
+    }
+} 
+
+@media (min-width: 767.99px) {
+    .sidebar {
+        background-color: #f0f0f0;
+        height: 100vh;
+    }
+}
+
+#searchbar {
+    width: 95%;
 }
 
 #create-content {
