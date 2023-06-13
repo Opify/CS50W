@@ -11,6 +11,7 @@ urlpatterns = [
     path("edits/<str:title>", views.edits, name="edits"),
     path("view_edit/<int:id>", views.edit_view, name="edit_view"),
     path("comment/<int:id>", views.comment, name="comment"),
+    path("edit_comment/<int:id>", views.edit_comment, name="edit_comment"),
     path("follow/<int:id>", views.follow, name="follow"),
     path("following", views.following, name="following"),
     path("query", views.query, name="query")

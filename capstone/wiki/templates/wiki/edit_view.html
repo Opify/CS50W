@@ -16,4 +16,22 @@
     <button id="reject" class="approve">Reject</button>
     {% endif %}
 </div>
+<hr class="divider">
+<h2>Comments</h2>
+<div>
+    <textarea placeholder="Comment here" id="comment"></textarea>
+    <br>
+    <button id="{{ edit.id }}" class="edit-comment-button">Comment</button>
+</div>
+<div id="edit-comment-view">
+    {% for comment in edit_comments %}
+    <div class="border border-black">
+        <p>{{ comment.user }}</p>
+        <p>{{ comment.timestamp }}</p>
+        <p>{{ comment.comment }}</p>
+    </div>
+    {% empty %}
+    <p id="no-comment">There are no comments!</p>
+    {% endfor %}
+</div>
 {% endblock %}

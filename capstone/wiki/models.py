@@ -39,4 +39,9 @@ class Following(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="following_user")
     def __str__(self):
         return f"Article: {self.article}"
- 
+
+class Edit_Comment(models.Model):
+    edit = models.ForeignKey(Edit, on_delete=models.CASCADE, related_name="edit_comment")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="edit_comment_user")
+    comment = models.TextField()
+    timestamp = models.DateTimeField()

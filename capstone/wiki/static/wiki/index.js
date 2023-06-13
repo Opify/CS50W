@@ -18,6 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Why cant we have a pass 
     }
     try {
+        document.querySelector('.edit-comment-button').addEventListener('click', (event) => edit_comment(event))
+    }
+    catch {
+        // Why cant we have a pass 
+    }
+    try {
         document.querySelectorAll('.approve').forEach((elem) => elem.addEventListener('click', (event) => approve(event)))
     }
     catch {
@@ -81,6 +87,38 @@ function comment(event) {
         root.prepend(div)
         })
 }
+
+function edit_comment(event) {
+    const edit_comment = event.target.parentElement.querySelector('#comment').value
+    const id = event.target.id
+    fetch(`/edit_comment/${id}`, {
+        method: "POST",
+        headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
+        body: JSON.stringify({
+            edit_comment: edit_comment
+        }),
+        mode: 'same-origin'
+    })
+    .then((response) => response.json())
+    .then((json) => {
+        try {
+            document.querySelector('#no-comment').remove()
+        }
+        catch {
+            // Why cant we have a pass 
+        }
+        const div = document.createElement('div')
+        div.className = "border border-black"
+        const user = json["user"]
+        const timestamp = json["timestamp"]
+        div.innerHTML = `<p>${user}</p>
+        <p>${timestamp}</p>
+        <p>${edit_comment}</p>`
+        const root = document.querySelector('#edit-comment-view')
+        root.prepend(div)
+        })
+}
+
 
 function approve(event) {
     const id = event.target.parentElement.id

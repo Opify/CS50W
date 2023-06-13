@@ -9,4 +9,7 @@ Searchbar (done)\
 Edit log of article (done)\
 Edits (done)\
 Approval/rejection of edits (done)\
-Mobile-responsive (done)
+Mobile-responsive (done)\
+Admin models (done)\
+Revert edits\
+Comments in edits (done)\

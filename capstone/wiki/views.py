@@ -110,7 +110,7 @@ def edits(request, title):
         article = Article.objects.filter(title=title).get()
         edits = Edit.objects.filter(article=article).order_by('-timestamp').all()
     except:
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("article", args=[title]))
     else:
         changes = []
         for edit in edits:
@@ -176,10 +176,15 @@ def edit_view(request, id):
         except:
             return HttpResponseRedirect(reverse("index"))
         else:
+            try:
+                edit_comments = Edit_Comment.objects.filter(edit=edit).order_by('-timestamp').all()
+            except:
+                edit_comments = None
             content = markdown.markdown(edit.content)
             return render(request, "wiki/edit_view.html", {
                 "edit": edit,
-                "content": content
+                "content": content,
+                "edit_comments": edit_comments
             })
 
 # handle following request and getting to following
@@ -236,7 +241,7 @@ def query(request):
             "results": suggestions
         })
     
-# handle uploading comments
+# handle uploading comments from articles
 def comment(request, id):
     if request.method == "POST":
         body = json.loads(request.body)
@@ -244,6 +249,20 @@ def comment(request, id):
         timestamp = datetime.now()
         user = request.user
         comment = Comment(article=Article.objects.get(pk=id), user=user, comment=content, timestamp=timestamp)
+        comment.save()
+        return JsonResponse({"timestamp": timestamp.strftime('%B %d, %Y, %I:%M %p'), "user": request.user.username})
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))
+    
+# handle uploading comments from edits
+def edit_comment(request, id):
+    if request.method == "POST":
+        body = json.loads(request.body)
+        content = body.get("edit_comment")
+        timestamp = datetime.now()
+        user = request.user
+        comment = Edit_Comment(edit=Edit.objects.get(pk=id), user=user, comment=content, timestamp=timestamp)
         comment.save()
         return JsonResponse({"timestamp": timestamp.strftime('%B %d, %Y, %I:%M %p'), "user": request.user.username})
     # reject all other methods
