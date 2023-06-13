@@ -185,7 +185,7 @@ def edit_view(request, id):
             except:
                 edit_comments = None
             current_version = Edit.objects.filter(article=edit.article, status=1).order_by('-timestamp').first()
-            if current_version != edit:
+            if current_version != edit and edit.status == 1:
                 current = False
             else:
                 current = True
