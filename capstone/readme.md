@@ -11,5 +11,5 @@ Edits (done)\
 Approval/rejection of edits (done)\
 Mobile-responsive (done)\
 Admin models (done)\
-Revert edits\
+Revert edits (done)\
 Comments in edits (done)\

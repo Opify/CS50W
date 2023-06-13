@@ -26,6 +26,7 @@
                 <p>{{ removal.sentence }}</p>
                 {% endfor %}
                 {% endif %}
+                <p>Proposed by: {{ change.0.user }}</p>
                 {% if change.0.status == 0 %}
                 <p>Status: Pending</p>
                 {% elif change.0.status == 1 %}
@@ -37,5 +38,7 @@
                 {% endif %}
             </div>
         {% endfor %}
-
+        <div class="d-flex justify-content-center">
+            <button id="{{ title }}" class="revert_original">Revert to original version</button>
+        </div>
 {% endblock %}

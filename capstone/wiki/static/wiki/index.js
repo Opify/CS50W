@@ -29,6 +29,18 @@ document.addEventListener('DOMContentLoaded', function() {
     catch {
         // Why cant we have a pass 
     }
+    try {
+        document.querySelector('#revert').addEventListener('click', (event) => revert(event))
+    }
+    catch {
+        // Why cant we have a pass 
+    }
+    try {
+        document.querySelector('.revert_original').addEventListener('click', (event) => revert_original(event))
+    }
+    catch {
+        // Why cant we have a pass 
+    }
 })
 
 function follow(event) {
@@ -119,7 +131,6 @@ function edit_comment(event) {
         })
 }
 
-
 function approve(event) {
     const id = event.target.parentElement.id
     const action = event.target.id
@@ -132,4 +143,22 @@ function approve(event) {
         mode: 'same-origin'
     })
     event.target.parentElement.style.display = 'none'
+}
+
+function revert(event) {
+    const id = event.target.parentElement.id
+    fetch(`/revert/${id}`, {
+        method: "POST",
+        headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
+        mode: 'same-origin'
+    })    
+}
+
+function revert_original(event) {
+    const title = event.target.id
+    fetch(`/revert_original/${title}`, {
+        method: "POST",
+        headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
+        mode: 'same-origin'
+    })    
 }

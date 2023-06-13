@@ -14,15 +14,19 @@
     {% if edit.status == 0 and user.is_superuser %}
     <button id="accept" class="approve">Accept</button>
     <button id="reject" class="approve">Reject</button>
+    {% elif user.is_superuser and not current %}
+    <button id="revert">Revert to this version</button>
     {% endif %}
 </div>
 <hr class="divider">
 <h2>Comments</h2>
+{% if user.is_authenticated %}
 <div>
     <textarea placeholder="Comment here" id="comment"></textarea>
     <br>
     <button id="{{ edit.id }}" class="edit-comment-button">Comment</button>
 </div>
+{% endif %}
 <div id="edit-comment-view">
     {% for comment in edit_comments %}
     <div class="border border-black">

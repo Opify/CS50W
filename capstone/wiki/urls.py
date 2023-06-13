@@ -14,5 +14,7 @@ urlpatterns = [
     path("edit_comment/<int:id>", views.edit_comment, name="edit_comment"),
     path("follow/<int:id>", views.follow, name="follow"),
     path("following", views.following, name="following"),
-    path("query", views.query, name="query")
+    path("query", views.query, name="query"),
+    path("revert/<int:id>", views.revert, name="revert"),
+    path("revert_original/<str:title>", views.revert_original, name="revert_original")
     ]

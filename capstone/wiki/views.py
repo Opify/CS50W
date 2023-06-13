@@ -79,6 +79,8 @@ def create(request):
         except:
             article = Article(user=request.user, title=title, content=content, create_timestamp=datetime.now())
             article.save()
+            original = Original_Article(article=Article.objects.filter(title=title).get(), content=content)
+            original.save()
             return HttpResponseRedirect(reverse("index"))
         else:
             return HttpResponseRedirect(reverse("index"))
@@ -118,11 +120,13 @@ def edits(request, title):
             list.append(edit)
             list.append(util.track_changes(article.content, edit.content))
             changes.append(list)
+        # if you're wondering how each change is stored, index 0 is the edit itself, index 1 is the list used to display changes made
         return render(request, "wiki/edits.html", {
             "changes": changes,
             "title": title
         })
 
+@login_required
 # handle edits
 def edit(request, title):
     # handle edit logic
@@ -180,11 +184,17 @@ def edit_view(request, id):
                 edit_comments = Edit_Comment.objects.filter(edit=edit).order_by('-timestamp').all()
             except:
                 edit_comments = None
+            current_version = Edit.objects.filter(article=edit.article, status=1).order_by('-timestamp').first()
+            if current_version != edit:
+                current = False
+            else:
+                current = True
             content = markdown.markdown(edit.content)
             return render(request, "wiki/edit_view.html", {
                 "edit": edit,
                 "content": content,
-                "edit_comments": edit_comments
+                "edit_comments": edit_comments,
+                "current": current
             })
 
 # handle following request and getting to following
@@ -240,7 +250,8 @@ def query(request):
         return render(request, "wiki/query.html", {
             "results": suggestions
         })
-    
+
+@login_required    
 # handle uploading comments from articles
 def comment(request, id):
     if request.method == "POST":
@@ -254,7 +265,8 @@ def comment(request, id):
     # reject all other methods
     else:
         return HttpResponseRedirect(reverse("index"))
-    
+
+@login_required
 # handle uploading comments from edits
 def edit_comment(request, id):
     if request.method == "POST":
@@ -265,6 +277,36 @@ def edit_comment(request, id):
         comment = Edit_Comment(edit=Edit.objects.get(pk=id), user=user, comment=content, timestamp=timestamp)
         comment.save()
         return JsonResponse({"timestamp": timestamp.strftime('%B %d, %Y, %I:%M %p'), "user": request.user.username})
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))
+    
+@login_required
+def revert(request, id):
+    if request.method == "POST":
+        edit = Edit.objects.get(pk=id)
+        article = edit.article
+        article.content = edit.content
+        article.edit_timestamp = datetime.now()
+        article.save()
+        revert_edit = Edit(article=article, user=request.user, title=f"Revert to edit #{id}", content=edit.content, timestamp = datetime.now(), status=1, approving_user=request.user)
+        revert_edit.save()
+        return HttpResponseRedirect(reverse("index"))
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
+@login_required
+def revert_original(request, title):
+    if request.method == "POST":
+        article = Article.objects.filter(title=title).get()
+        original = Original_Article.objects.filter(article=Article.objects.filter(title=title).get()).get()
+        article.content = original.content
+        article.edit_timestamp = datetime.now()
+        article.save()
+        revert_edit = Edit(article=article, user=request.user, title=f"Revert to original version", content=original.content, timestamp = datetime.now(), status=1, approving_user=request.user)
+        revert_edit.save()
+        return HttpResponseRedirect(reverse("index"))
     # reject all other methods
     else:
         return HttpResponseRedirect(reverse("index"))

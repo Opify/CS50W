@@ -13,6 +13,10 @@ class Article(models.Model):
     def __str__(self):
         return f"Title: {self.title}, Content: {self.content}"
 
+class Original_Article(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="original")
+    content = models.TextField()
+
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comment")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user")
