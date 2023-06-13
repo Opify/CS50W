@@ -1,15 +1,11 @@
-# Wiki v2.0 #
-
-To-do:\
-View article (done)\
-Index (done)\
-Following (done)\
-Comments (done)\
-Searchbar (done)\
-Edit log of article (done)\
-Edits (done)\
-Approval/rejection of edits (done)\
-Mobile-responsive (done)\
-Admin models (done)\
-Revert edits (done)\
-Comments in edits (done)\
+# Wiki v2 #
+## Distinctiveness and Complexity ##
+This project was based on Project 1, Wiki, with added functionality. Back when I was doing project 1, I noticed there were some key features missing, such as an approval system for editing and a way to communicate with each other. This results in edits being done without other people checking if the changes made were correct. It also meant there was no way for users to directly communicate with each other through the site. I also felt saving articles in separate files was problematic. This was because if admins want to delete an article, they need direct access to the server with the files to delete them. Finally, the project was lacking in security as anyone could create articles and edit them, making it easy to vandalise articles.
+As such, I believe this project is distinctive and complex enough as it does a major overhaul to how wiki was done. Users are required to be logged in to create articles, propose changes to articles and comment on both articles and edits. Articles are now also stored in the database for admins to be able to delete them, even without physical access to the server. Admins are given permission to approve edits to articles.
+An approval system based on Github’s pull request system was added, along with an algorithm to track changes made in an edit and failsafe systems to revert to previous changes should there be a need to. The system also incorporates javascript to minimise reloading the websites for any action done
+Finally, the ability to comment was added for both articles and edits to allow logged in users to easily communicate their opinions of articles and edits.
+## Steps to run the project ##
+1. Run pip -r requirements.txt (for markdown module depenency)
+2. Run python manage.py runserver
+## Contents in the folder ##
+The templates contain 11 templates. Each template is responsible for a different part of the project, except for layout.html which is used throughout the project, along with loading both index.js and styles.css in the static folder. util.py is used for the algorithm responsible for tracking changes made in an edit and is used in the edits view. The markdown module is used to render articles in markdown. Index.js is used for on-site interaction which are commenting, following, approving edits and reverting to previous approved versions. Styles.css is responsible for mobile responsiveness and to touch up on any styling needed (most of the styling is done via bootstrap classes throughout the templates)
