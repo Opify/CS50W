@@ -97,6 +97,7 @@ function comment(event) {
         <p>${comment}</p>`
         const root = document.querySelector('#comment-view')
         root.prepend(div)
+        event.target.parentElement.querySelector('#comment').value = ""
         })
 }
 
@@ -128,6 +129,7 @@ function edit_comment(event) {
         <p>${edit_comment}</p>`
         const root = document.querySelector('#edit-comment-view')
         root.prepend(div)
+        event.target.parentElement.querySelector('#comment').value = ""
         })
 }
 
