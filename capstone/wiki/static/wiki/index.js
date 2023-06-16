@@ -142,16 +142,24 @@ function approve(event) {
         }),
         mode: 'same-origin'
     })
-    event.target.parentElement.style.display = 'none'
+    .then(() => {
+        if (action === "accept") {
+            window.location.replace(`/wiki/${event.target.dataset.article}`)
+        }
+    })
 }
 
 function revert(event) {
     const id = event.target.parentElement.id
+    const title = event.target.dataset.article
     fetch(`/revert/${id}`, {
         method: "POST",
         headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
         mode: 'same-origin'
-    })    
+    })
+    .then(() => {
+        window.location.replace(`/wiki/${title}`)
+    }) 
 }
 
 function revert_original(event) {
@@ -160,5 +168,8 @@ function revert_original(event) {
         method: "POST",
         headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
         mode: 'same-origin'
-    })    
+    })
+    .then(() => {
+        window.location.replace(`/wiki/${title}`)
+    }) 
 }

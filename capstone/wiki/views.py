@@ -189,12 +189,14 @@ def edit_view(request, id):
                 current = False
             else:
                 current = True
+            article = edit.article
             content = markdown.markdown(edit.content)
             return render(request, "wiki/edit_view.html", {
                 "edit": edit,
                 "content": content,
                 "edit_comments": edit_comments,
-                "current": current
+                "current": current,
+                "article": article
             })
 
 # handle following request and getting to following

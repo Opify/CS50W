@@ -12,10 +12,10 @@
 </div>
 <div id="{{ edit.id }}">
     {% if edit.status == 0 and user.is_superuser %}
-    <button id="accept" class="approve">Accept</button>
+    <button id="accept" class="approve" data-article="{{ article.title }}">Accept</button>
     <button id="reject" class="approve">Reject</button>
     {% elif user.is_superuser and not current %}
-    <button id="revert">Revert to this version</button>
+    <button id="revert" data-article="{{ article.title }}">Revert to this version</button>
     {% endif %}
 </div>
 <hr class="divider">

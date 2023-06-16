@@ -10,6 +10,7 @@
 
         {% for change in changes %}
             <div class="border border-dark">
+                <h3>Edit #{{ change.0.id }}</h3>
                 <p><a href="{% url 'edit_view' change.0.id %}">{{ change.0.title }}</a></p>
                 <p>{{ change.0.timestamp }}</p>
                 {% if change.1.0 %}
