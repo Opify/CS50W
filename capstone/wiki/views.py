@@ -205,7 +205,7 @@ def following(request):
     # handle following page
     if request.method == "GET":
         try:
-            following = Following.objects.filter(user=request.user).all()
+            following = Following_Article.objects.filter(user=request.user).all()
         except:
             following = None
         return render(request, "wiki/following.html", {
@@ -220,9 +220,9 @@ def follow(request, id):
     # handle following request
     if request.method == "POST":
         try:
-            following = Following.objects.filter(article=Article.objects.get(pk=id), user=request.user).get()
+            following = Following_Article.objects.filter(article=Article.objects.get(pk=id), user=request.user).get()
         except:
-            following = Following(article=Article.objects.get(pk=id), user=request.user)
+            following = Following_Article(article=Article.objects.get(pk=id), user=request.user)
             following.save()
             return HttpResponse(200)
         else:
@@ -231,7 +231,7 @@ def follow(request, id):
     # check if follow exists
     else:
         try:
-            following = Following.objects.filter(article=Article.objects.get(pk=id), user=request.user).get()
+            following = Following_Article.objects.filter(article=Article.objects.get(pk=id), user=request.user).get()
         except:
             return JsonResponse({"followed": "false"})
         else:

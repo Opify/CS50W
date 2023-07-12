@@ -1,3 +1,23 @@
+# Todo #
+Add groups for both users and articles
+* There should be a group index page that links to a page showing what's in a group
+* In a group page, there should be a list of user experts and articles
+* Articles can optionally be included in a group
+
+Add user profile pages
+* Profile pages should include the ability to add an optional bio
+* Profile pages should be able to select a group that they are an expert in
+* Other users can follow a user
+
+Require articles to be approved too
+
+Add the ability to see random articles in the sidebar
+
+Add an article of the day
+
+Add a likeability score for edits so that non-admins can vote on whether a proposed edit is good or bad
+
+
 # Wiki v2 #
 ## Distinctiveness and Complexity ##
 This project was based on Project 1, Wiki, with added functionality. Back when I was doing project 1, I noticed there were some key features missing, such as an approval system for editing and a way to communicate with each other. This results in edits being done without other people checking if the changes made were correct. It also meant there was no way for users to directly communicate with each other through the site. I also felt saving articles in separate files was problematic. This was because if admins want to delete an article, they need direct access to the server with the files to delete them. Finally, the project was lacking in security as anyone could create articles and edit them, making it easy to vandalise articles.  
