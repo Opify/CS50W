@@ -1,0 +1,26 @@
+{% extends "wiki/layout.html" %}
+
+{% block title %}
+    {{ article.title }}
+{% endblock %}
+
+{% block body %}
+<h1>{{ article.title }}</h1>
+<!-- This page should be seen when one finds a valid article-->
+<div id="article-view">
+    {{ content|safe }}
+    {% if article.status == 0 %}
+    <p>Status: Pending</p>
+    {% elif article.status == 1 %}
+    <p>Status: Accepted</p>
+    {% elif article.status == 2 %}
+    <p>Status: Rejected</p>
+    {% endif %}
+</div>
+<div id="{{ article.title }}">
+    {% if article.status == 0 and user.is_superuser %}
+    <button id="accept" class="article_approve">Accept</button>
+    <button id="reject" class="article_approve">Reject</button>
+    {% endif %}
+</div>
+{% endblock %}

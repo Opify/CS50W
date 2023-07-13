@@ -1,0 +1,26 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+Groups
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when one tries to search for an article that does not exist -->
+    <h1>{{ group }}</h1>
+    <h2>Experts</h2>
+    <ul>
+        {% for expert in experts %}
+        <li><a href="{% url 'profile' expert.expert %}">{{ expert.expert }}</a></li>
+        {% empty %}
+        <p>There are no experts!</p>
+        {% endfor %}
+    </ul>
+    <h2>Articles</h2>
+    <ul>
+        {% for article in articles %}
+        <li><a href="{% url 'article' article.article %}">{{ article.article }}</a></li>
+        {% empty %}
+        <p>There are no articles!</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "wiki/layout.html" %}
+
+{% block title %}
+    Edits
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist as the default page-->
+    <h1>Articles pending for approval</h1>
+
+        {% for article in pending %}
+            <div class="border border-dark">
+                <a href="{% url 'approve' article.title %}"><h3>{{ article.title }}</h3>
+                <p>Proposed by: {{ article.user }}</p>
+                {% if article.status == 0 %}
+                <p>Status: Pending</p>
+                {% elif article.status == 1 %}
+                <p>Status: Accepted</p>
+                {% elif article.status == 2 %}
+                <p>Status: Rejected</p>
+                {% endif %}
+                </a>
+            </div>
+        {% endfor %}
+{% endblock %}

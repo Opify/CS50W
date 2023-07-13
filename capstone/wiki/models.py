@@ -65,10 +65,7 @@ class Edit_Comment(models.Model):
     comment = models.TextField()
     timestamp = models.DateTimeField()
 
-class User_Group(models.Model):
-    expert = models.ForeignKey(User, on_delete=models.CASCADE, related_name="group_expert")
-    group = models.CharField(max_length=50)
-
-class Article_Group(models.Model):
-    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="article_group")
+class Group(models.Model):
+    expert = models.ForeignKey(User, on_delete=models.CASCADE, related_name="group_expert", blank=True, null=True)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="article_group", blank=True, null=True)
     group = models.CharField(max_length=50)

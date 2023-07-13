@@ -73,11 +73,16 @@ def create(request):
     if request.method == "POST":
         title = request.POST.get("title")
         content = request.POST.get("content")
+        group = request.POST.get("group")
         # checks if article already exists via title
         try:
             Article.objects.filter(title=title).get()
         except:
-            article = Article(user=request.user, title=title, content=content, create_timestamp=datetime.now())
+            if group != "":
+                capitalised = group.capitalize()
+                article = Article(user=request.user, title=title, content=content, create_timestamp=datetime.now(), status=0, group=capitalised)
+            else:
+                article = Article(user=request.user, title=title, content=content, create_timestamp=datetime.now(), status=0)
             article.save()
             original = Original_Article(article=Article.objects.filter(title=title).get(), content=content)
             original.save()
@@ -88,10 +93,45 @@ def create(request):
     else:
         return render(request, "wiki/create.html")
 
+# Display all articles created, either by everyone or by user
+@login_required
+def approve_index(request):
+    if request.user.is_superuser():
+        # admins should be able to see all articles
+        try:
+            pending = Article.objects.order_by('-create_timestamp').all()
+        except:
+            return HttpResponseRedirect(reverse("index"))
+    else:
+        # users should only be able to see articles they created
+        try:
+            pending = Article.objects.filter(user=request.user).order_by('-create_timestamp').all()
+        except:
+            return HttpResponseRedirect(reverse("index"))
+    return render(request, "wiki/approval_index", {
+        "pending": pending
+    })
+
+# Handle proposed article contents and approval of articles
+def approve_view(request, title):
+    if request.method == "POST":
+        pass
+    else:
+        try:
+            article = Article.objects.filter(title=title).get()
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            content = markdown.markdown(article.content)
+            return render(request, "wiki/approval_view.html", {
+                "article": article,
+                "content": content
+            })
+
 # Display article and coments
 def article(request, title):
     try:
-        article = Article.objects.filter(title=title).get()
+        article = Article.objects.filter(title=title, status=1).get()
     except:
         return HttpResponseRedirect(reverse("index"))
     else:
@@ -199,7 +239,7 @@ def edit_view(request, id):
                 "article": article
             })
 
-# handle following request and getting to following
+# handle following page and getting to following
 @login_required
 def following(request):
     # handle following page
@@ -216,8 +256,8 @@ def following(request):
         return HttpResponseRedirect(reverse("index"))
 
 @login_required
-def follow(request, id):
-    # handle following request
+def follow_article(request, id):
+    # handle following article request
     if request.method == "POST":
         try:
             following = Following_Article.objects.filter(article=Article.objects.get(pk=id), user=request.user).get()
@@ -228,7 +268,7 @@ def follow(request, id):
         else:
             following.delete()
             return HttpResponse(200)
-    # check if follow exists
+    # check if follow for article exists
     else:
         try:
             following = Following_Article.objects.filter(article=Article.objects.get(pk=id), user=request.user).get()
@@ -312,3 +352,33 @@ def revert_original(request, title):
     # reject all other methods
     else:
         return HttpResponseRedirect(reverse("index"))
+
+# Display lists of groups
+def group_index(request):
+    raw = Group.objects.values_list("group", flat=True)
+    # get unique groups
+    groups = set(raw)
+    return render(request, "wiki/groups.html", {
+        "groups": groups
+    })
+
+# Display experts and articles in a group
+def group(request, group):
+    try:
+        entries = Group.objects.filter(group=group).all()
+    except:
+        return HttpResponseRedirect(reverse(index))
+    experts = []
+    articles = []
+    for entry in entries:
+        # if expert is null, it must be an article
+        if not entry.expert:
+            articles.append(entry)
+        # if article is null, it must be an expert
+        elif not entry.article:
+            experts.append(entry)
+    return render(request, "wiki/group.html", {
+        "experts": experts,
+        "articles": articles,
+        "group": group
+    })

@@ -15,6 +15,9 @@
                 <form action="query">
                     <input class="search" type="text" name="q" placeholder="Search Encyclopedia" id="searchbar">
                 </form>
+                <div>
+                    <a href="{% url 'groups' %}">Groups</a>
+                </div>
                 {% if not user.is_authenticated %}
                 <div>
                     <a href="{% url 'login' %}">Login</a>

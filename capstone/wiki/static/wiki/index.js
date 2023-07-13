@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     try {
-        document.querySelector('.follow').addEventListener('click', (event) => follow(event))
+        document.querySelector('.follow').addEventListener('click', (event) => follow_article(event))
     }
     catch {
         // Why cant we have a pass 
     }
     try {
-        check_follow(document.querySelector('.follow'))
+        check_follow_article(document.querySelector('.follow'))
     }
     catch {
         // Why cant we have a pass 
@@ -43,10 +43,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 })
 
-function follow(event) {
+function follow_article(event) {
     event.preventDefault()
     const id = event.target.id
-    fetch(`/follow/${id}`, {
+    fetch(`/follow_article/${id}`, {
         method: "POST",
         headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
         mode: 'same-origin'
@@ -58,9 +58,9 @@ function follow(event) {
     }
 }
 
-function check_follow(follow) {
+function check_follow_article(follow) {
     id = follow.id
-    fetch(`/follow/${id}`)
+    fetch(`/follow_article/${id}`)
     .then(response => response.json())
     .then((json) => {
         if (json["followed"] === "true") {
