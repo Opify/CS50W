@@ -67,6 +67,41 @@ def register(request):
     else:
         return render(request, "wiki/register.html")
 
+# handle rendering of profile page and following user
+def profile(request, user):
+    if request.method == "POST":
+        try:
+            following = Following_User.objects.filter(following=User.objects.get(username=user), follower=request.user).get()
+        except:
+            following = Following_User(following=User.objects.get(username=user), follower=request.user)
+            following.save()
+            return HttpResponse(200)
+        else:
+            following.delete()
+            return HttpResponse(200)
+    else:
+        try:
+            profile_info = User.objects.filter(username=user)
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            try:
+                expert = Group.objects.filter(expert=profile_info)
+            except:
+                expert = None
+            try:
+                articles_created = Article.objects.filter(user=profile_info).all()
+                articles = []
+                for article in articles_created:
+                    articles.append(article.title)
+            except:
+                articles = None
+            return render(request, "wiki/profile.html", {
+                "profile": profile_info,
+                "expert": expert,
+                "articles": articles
+            })
+
 @login_required
 def create(request):
     # handle article creation
@@ -80,10 +115,13 @@ def create(request):
         except:
             if group != "":
                 capitalised = group.capitalize()
-                article = Article(user=request.user, title=title, content=content, create_timestamp=datetime.now(), status=0, group=capitalised)
+                article = Article(user=request.user, title=title, content=content, create_timestamp=datetime.now(), status=0)
+                article.save()
+                grouping = Group(article=article, group=capitalised)
+                grouping.save()
             else:
                 article = Article(user=request.user, title=title, content=content, create_timestamp=datetime.now(), status=0)
-            article.save()
+                article.save()
             original = Original_Article(article=Article.objects.filter(title=title).get(), content=content)
             original.save()
             return HttpResponseRedirect(reverse("index"))
@@ -115,7 +153,18 @@ def approve_index(request):
 # Handle proposed article contents and approval of articles
 def approve_view(request, title):
     if request.method == "POST":
-        pass
+        body = json.loads(request.body)
+        action = body.get("action")
+        article = Article.objects.get(title=title)
+        if action == "accept":
+            article.status = 1
+            article.save()
+            return HttpResponse(200)
+        elif action == "reject":
+            article.status = 2
+            article.save()
+            return HttpResponse(200)
+        return HttpResponseRedirect(reverse('approve_view', args=[title]))
     else:
         try:
             article = Article.objects.filter(title=title).get()
@@ -139,17 +188,22 @@ def article(request, title):
             comments = Comment.objects.filter(article=article).order_by('-timestamp').all()
         except:
             comments = None
+        try:
+            group = Group.objects.filter(article=article).get()
+        except:
+            group = None
         content = markdown.markdown(article.content)
         return render(request, "wiki/article.html", {
             "article": article,
             "content": content,
-            "comments": comments
+            "comments": comments,
+            "group": group
         })
 
 # Display lists of edits for an article
 def edits(request, title):
     try:
-        article = Article.objects.filter(title=title).get()
+        article = Article.objects.filter(title=title, status=1).get()
         edits = Edit.objects.filter(article=article).order_by('-timestamp').all()
     except:
         return HttpResponseRedirect(reverse("article", args=[title]))
@@ -172,17 +226,22 @@ def edit(request, title):
     # handle edit logic
     if request.method == "POST":
         try:
-            article = Article.objects.filter(title=title).get()
+            article = Article.objects.filter(title=title, status=1).get()
         except:
             return HttpResponseRedirect(reverse("index"))
         else:
-            edit = Edit(article=article, user=request.user, title=request.POST.get("title"), content=request.POST.get("content"), timestamp=datetime.now(), status = 0)
+            group = request.POST.get("group")
+            if group != "":
+                capitalised = group.capitalize()
+                edit = Edit(article=article, user=request.user, title=request.POST.get("title"), content=request.POST.get("content"), timestamp=datetime.now(), status = 0, group=capitalised)
+            else:
+                edit = Edit(article=article, user=request.user, title=request.POST.get("title"), content=request.POST.get("content"), timestamp=datetime.now(), status = 0)
             edit.save()
             return HttpResponseRedirect(reverse("article", args=[title]))
     # handle edit page
     else:
         try:
-            article = Article.objects.filter(title=title).get()
+            article = Article.objects.filter(title=title, status=1).get()
         except:
             return HttpResponseRedirect(reverse("index"))
         else:
@@ -204,6 +263,19 @@ def edit_view(request, id):
             article = edit.article
             article.content = content
             article.edit_timestamp = timestamp
+            try:
+                grouping = Group.objects.filter(article=article).get()
+            except:
+                if edit.group != "":
+                    new_grouping = Group(article=article, group=edit.group)
+                    new_grouping.save()
+            else:
+                if edit.group != grouping.group:
+                    if edit.group == "":
+                        grouping.delete()
+                    else:
+                        grouping.group = edit.group
+                        grouping.save()
             edit.save()
             article.save()
             return HttpResponse(200)
@@ -212,7 +284,6 @@ def edit_view(request, id):
             edit.approving_user = request.user
             edit.save()
             return HttpResponse(200)
-        print(f"{action}")
         return HttpResponseRedirect(reverse('edit_view', args=[id]))
     else:
         try:
@@ -280,7 +351,7 @@ def follow_article(request, id):
 # handle query results
 def query(request):
     query = request.GET["q"]
-    articles = Article.objects.values_list('title', flat=True)
+    articles = Article.objects.filter(status=1).values_list('title', flat=True)
     if query in articles:
         return HttpResponseRedirect(reverse("article", args=[query]))
     else:

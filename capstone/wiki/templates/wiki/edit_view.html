@@ -9,6 +9,9 @@
 <!-- This page should be seen when one finds a valid article-->
 <div id="edit-view">
     {{ content|safe }}
+    {% if edit.group %}
+    <p>Group: <a href="{% url 'group' edit.group %}">{{ edit.group }}</a></p>
+    {% endif %}
 </div>
 <div id="{{ edit.id }}">
     {% if edit.status == 0 and user.is_superuser %}

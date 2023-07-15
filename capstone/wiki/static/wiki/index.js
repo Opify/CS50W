@@ -41,6 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
     catch {
         // Why cant we have a pass 
     }
+    try {
+        document.querySelector('.article_approve').addEventListener('click', (event) => article_approve(event))
+    }
+    catch {
+        // Why cant we have a pass 
+    }
 })
 
 function follow_article(event) {
@@ -147,6 +153,24 @@ function approve(event) {
     .then(() => {
         if (action === "accept") {
             window.location.replace(`/wiki/${event.target.dataset.article}`)
+        }
+    })
+}
+
+function article_approve(event) {
+    const id = event.target.parentElement.id
+    const action = event.target.id
+    fetch(`/pending/${id}`, {
+        method: "POST",
+        headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
+        body: JSON.stringify({
+            action: action
+        }),
+        mode: 'same-origin'
+    })
+    .then(() => {
+        if (action === "accept") {
+            window.location.replace(`/wiki/${id}`)
         }
     })
 }

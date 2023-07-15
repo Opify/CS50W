@@ -1,0 +1,30 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+{{ profile.username }}
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when one tries to search for an article that does not exist -->
+    <h1>{{ profile.username }}</h1>
+    <p>{{ profile.bio }}</p>
+    {% if expert %}
+    <p>Expert in: {{ expert }}</p>
+    {% endif %}
+    {% if user == profile.username %}
+    <form action="{% url 'edit' article.title %}">
+        <input type="submit" value="Edit article">
+    </form>
+    {% elif user.is_authenticated %}
+    <button id="{{ profile.username }}" class="follow_user">Follow</button>
+    {% endif %}
+    <h2>Articles created:</h2>
+    <ul>
+        {% for article in articles %}
+        <li><a href="{% url 'article' article %}">{{ article }}</a></li>
+        {% empty %}
+        <p>This user has not created any articles!</p>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

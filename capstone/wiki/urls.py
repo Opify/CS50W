@@ -20,5 +20,6 @@ urlpatterns = [
     path("groups", views.group_index, name="groups"),
     path("group/<str:group>", views.group, name="group"),
     path("pending", views.approve_index, name="approve_index"),
-    path("pending/<str:title>", views.approve_view, name="approve")
+    path("pending/<str:title>", views.approve_view, name="approve"),
+    path("profile/<str:user>", views.profile, name="profile")
     ]

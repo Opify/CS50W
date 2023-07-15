@@ -9,6 +9,9 @@
 <!-- This page should be seen when one finds a valid article-->
 <div id="article-view">
     {{ content|safe }}
+    {% if group %}
+    <p>Group: <a href="{% url 'group' group.group %}">group.group</a></p>
+    {% endif %}
     <p>Created on: {{ article.create_timestamp }}</p>
     {% if article.edit_timestamp != None %}
     <p>Edited on: {{ article.edit_timestamp }}</p>
