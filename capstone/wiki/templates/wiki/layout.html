@@ -28,6 +28,9 @@
                 {% endif %}
                 {% if user.is_authenticated %}
                 <div>
+                    <a href="{% url 'approve_index' %}">Check pending articles</a>
+                </div>
+                <div>
                     <a href="{% url 'logout' %}">Logout</a>
                 </div>
                 {% endif %}
@@ -39,6 +42,9 @@
                 </div>
                 <div>
                     <a href="{% url 'following' %}">Following</a>
+                </div>
+                <div>
+                    <a href="{% url 'groups' %}">Groups</a>
                 </div>
                 {% block nav %}
                 {% endblock %}

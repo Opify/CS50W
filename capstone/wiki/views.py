@@ -17,7 +17,7 @@ from .models import *
 
 # Display all articles
 def index(request):
-    articles = Article.objects.order_by('-create_timestamp').all()
+    articles = Article.objects.filter(status=1).order_by('-create_timestamp').all()
     return render(request, "wiki/index.html", {
         "articles": articles
     })
@@ -81,7 +81,7 @@ def profile(request, user):
             return HttpResponse(200)
     else:
         try:
-            profile_info = User.objects.filter(username=user)
+            profile_info = User.objects.filter(username=user).get()
         except:
             return HttpResponseRedirect(reverse("index"))
         else:
@@ -96,11 +96,61 @@ def profile(request, user):
                     articles.append(article.title)
             except:
                 articles = None
+            try:
+                following = Following_User.objects.filter(following=User.objects.filter(username=user).get(), follower=request.user)
+            except:
+                following = None
+            if following:
+                following = "Unfollow"
+            else:
+                following = "Follow"
             return render(request, "wiki/profile.html", {
                 "profile": profile_info,
                 "expert": expert,
-                "articles": articles
+                "articles": articles,
+                "following": following
             })
+
+@login_required
+def edit_profile(request, user):
+    if request.method == "POST":
+        bio = request.POST["bio"]
+        new_expert = request.POST["group"]
+        if new_expert == "":
+            try:
+                current_expert = Group.objects.filter(expert=request.user).get()
+            except:
+                pass
+            else:
+                current_expert.delete()
+        else:
+            try:
+                current_expert = Group.objects.filter(expert=request.user).get()
+            except:
+                capitalised = expert.capitalize()
+                updated_expert = Group(expert=request.user, group=capitalised)
+                updated_expert.save()
+            else:
+                capitalised = new_expert.capitalize()
+                current_expert.group = capitalised
+                current_expert.save()
+        profile = User.objects.filter(username=user).get()
+        profile.bio = bio
+        profile.save()
+        return HttpResponseRedirect(reverse('profile', args=[user]))
+    else:
+        try:
+            profile = User.objects.filter(username=user).get()
+        except:
+            return HttpResponseRedirect(reverse('index'))
+        try:
+            expert = Group.objects.filter(expert=request.user).get()
+        except:
+            expert = None
+        return render(request, "wiki/edit_profile.html", {
+            "profile": profile,
+            "expert": expert
+        })
 
 @login_required
 def create(request):
@@ -134,7 +184,7 @@ def create(request):
 # Display all articles created, either by everyone or by user
 @login_required
 def approve_index(request):
-    if request.user.is_superuser():
+    if request.user.is_superuser:
         # admins should be able to see all articles
         try:
             pending = Article.objects.order_by('-create_timestamp').all()
@@ -146,7 +196,7 @@ def approve_index(request):
             pending = Article.objects.filter(user=request.user).order_by('-create_timestamp').all()
         except:
             return HttpResponseRedirect(reverse("index"))
-    return render(request, "wiki/approval_index", {
+    return render(request, "wiki/approval_index.html", {
         "pending": pending
     })
 
@@ -444,7 +494,8 @@ def group(request, group):
     for entry in entries:
         # if expert is null, it must be an article
         if not entry.expert:
-            articles.append(entry)
+            if entry.article.status == 1:
+                articles.append(entry)
         # if article is null, it must be an expert
         elif not entry.article:
             experts.append(entry)

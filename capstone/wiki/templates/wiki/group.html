@@ -1,4 +1,4 @@
-{% extends "encyclopedia/layout.html" %}
+{% extends "wiki/layout.html" %}
 
 {% block title %}
 Groups
@@ -18,7 +18,7 @@ Groups
     <h2>Articles</h2>
     <ul>
         {% for article in articles %}
-        <li><a href="{% url 'article' article.article %}">{{ article.article }}</a></li>
+        <li><a href="{% url 'article' article.article.title %}">{{ article.article.title }}</a></li>
         {% empty %}
         <p>There are no articles!</p>
         {% endfor %}

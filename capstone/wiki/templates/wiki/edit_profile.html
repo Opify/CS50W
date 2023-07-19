@@ -7,19 +7,24 @@ Edit article
 {% block body %}
 <!-- This page should exist when creating an article-->
     <h1>Edit article</h1>
-<form action="{% url 'edit' article.title %}" method="post">
+<form action="{% url 'edit_profile' profile.username %}" method="post">
     {% csrf_token %}
     <div>
-        <input type="text" name="title" placeholder="Summary of changes" id="create-title" required>
+        {% if profile.bio %}
+        <textarea name="bio" placeholder="Lorem Ipsum" id="create-content">{{ profile.bio }}</textarea>
+        {% else %}
+        <textarea name="bio" placeholder="Lorem Ipsum" id="create-content"></textarea>
+        {% endif %}
     </div>
     <div>
-        <textarea name="content" placeholder="Lorem Ipsum" id="create-content">{{ article.content }}</textarea>    
+        {% if expert %}
+        <input type="text" name="group" placeholder="Expert (optional)" id="create-group" value="{{ expert.group }}">
+        {% else %}
+        <input type="text" name="group" placeholder="Expert (optional)" id="create-group">
+        {% endif %}
     </div>
     <div>
-        <input type="text" name="group" placeholder="Group (optional)" id="create-group" value="{{ article.group }}">
-    </div>
-    <div>
-        <input type="submit" value="Propose edits">
+        <input type="submit" value="Edit profile">
     </div>
 </form>
 {% endblock %}

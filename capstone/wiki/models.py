@@ -20,7 +20,7 @@ class Article(models.Model):
     ])
     approving_user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     def __str__(self):
-        return f"Title: {self.title}, Content: {self.content}"
+        return f"Title: {self.title}, Content: {self.content}, Status: {self.status}"
 
 class Original_Article(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="original")
@@ -45,7 +45,6 @@ class Edit(models.Model):
     ])
     approving_user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True),
     group = models.CharField(max_length=50, blank=True, null=True)
-    score = models.IntegerField(default=0)
     def __str__(self):
         return f"Status: {self.status}"
 
@@ -69,3 +68,5 @@ class Group(models.Model):
     expert = models.ForeignKey(User, on_delete=models.CASCADE, related_name="group_expert", blank=True, null=True)
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="article_group", blank=True, null=True)
     group = models.CharField(max_length=50)
+    def __str__(self):
+        return f"Group: {self.group}"

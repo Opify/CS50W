@@ -1,4 +1,4 @@
-{% extends "encyclopedia/layout.html" %}
+{% extends "wiki/layout.html" %}
 
 {% block title %}
 {{ profile.username }}
@@ -7,17 +7,24 @@
 {% block body %}
 <!-- This page should exist when one tries to search for an article that does not exist -->
     <h1>{{ profile.username }}</h1>
-    <p>{{ profile.bio }}</p>
-    {% if expert %}
-    <p>Expert in: {{ expert }}</p>
+    {% if profile.bio %}
+    <p>Bio: {{ profile.bio }}</p>
+    {% else %}
+    <p>No bio!</p>
     {% endif %}
-    {% if user == profile.username %}
-    <form action="{% url 'edit' article.title %}">
+    {% if expert %}
+    <p>Expert in: {{ expert.expert }}</p>
+    {% else %}
+    <p>No expertise</p>
+    {% endif %}
+    {% if user == profile %}
+    <form action="{% url 'edit_profile' profile.username %}">
         <input type="submit" value="Edit article">
     </form>
-    {% elif user.is_authenticated %}
-    <button id="{{ profile.username }}" class="follow_user">Follow</button>
+    {% elif user.is_authenticated and user != profile %}
+    <button id="{{ profile.username }}" class="follow_user">{{ following }}</button>
     {% endif %}
+    <hr class="divider">
     <h2>Articles created:</h2>
     <ul>
         {% for article in articles %}
