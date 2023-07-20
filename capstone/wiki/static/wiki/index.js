@@ -12,6 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Why cant we have a pass 
     }
     try {
+        check_follow_user(document.querySelector('.follow_user'))
+    }
+    catch {
+        // Why cant we have a pass 
+    }
+    try {
         document.querySelector('.comment-button').addEventListener('click', (event) => comment(event))
     }
     catch {
@@ -70,6 +76,17 @@ function follow_article(event) {
     }
 }
 
+function check_follow_article(follow) {
+    id = follow.id
+    fetch(`/follow/${id}`)
+    .then(response => response.json())
+    .then((json) => {
+        if (json["followed"] === "true") {
+            follow.value = "Unfollow"
+        }
+    })
+}
+
 function follow_user(event) {
     const id = event.target.id
     fetch(`/profile/${id}`, {
@@ -86,9 +103,9 @@ function follow_user(event) {
     })
 }
 
-function check_follow_article(follow) {
+function check_follow_user(follow) {
     id = follow.id
-    fetch(`/follow_article/${id}`)
+    fetch(`/follow_user/${id}`)
     .then(response => response.json())
     .then((json) => {
         if (json["followed"] === "true") {

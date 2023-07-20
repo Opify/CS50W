@@ -32,8 +32,9 @@ I believe this project is also complex as an approval system based on Github’s
     * `styles.css` is used to touch up on web styling. Most of the styling is done via bootstrap classes in the templates. In particular, `styles.css` is responsible for the mobile responsiveness of the sidebar.
     * `index.js` contains various functions to minimise reloading of the page to visually update it and to send data to the back-end by using the FETCH API.
         * `follow_article_` is used to follow and unfollow an article by sending an empty FETCH request to `follow` in `views.py` when the follow/unfollow button is clicked. It also updates the button as appropriate after following/unfollowing.
+        * `check_follow_article` is used to change the text content of the follow button to unfollow if the user has followed the article when entering the article page bu submitting a blank FETCH request to `follow_article`.
         * `follow_user` is used to follow and unfollow a user by sending an empty FETCH request to `profile` in `views.py` when the follow/unfollow button is clicked. It also updates the button as appropriate after following/unfollowing.
-        * `check_follow_article` is used to change the text content of the follow button to unfollow if the user has followed the article when entering the article page.
+        * `check_follow_user` is used to change the text content of the follow button to unfollow if the user has followed the user when entering the article page by sending a blank FETCH request to `check_follow_user`.
         * `comment` is used to send a user comment in an article to `edit_comment` in `views.py` via a FETCH request. It also displays the comment at the top of the comments list so that users need not reload the page to see their new comment.
         * `edit_comment` is used to send a user comment in an edit to `edit_comment` in `views.py` via a FETCH request . It also displays the comment at the top of the comments list so that users need not reload the page to see their new comment.
         * `approve` is used to either approve or reject an edit by sending `action` (either `accept` or `reject`) to `edit_view` in `views.py` and to remove the buttons for approving and rejecting after approval/rejection.
@@ -62,6 +63,7 @@ I believe this project is also complex as an approval system based on Github’s
     * `index` displays an article of the day (currently just a random article).
     * `profile` displays the profile of a user. It also acts as and endpoint for FETCH requests to follow/unfollow a user by updating the `Following_User` model.
     * `edit_profile` is used to display the form for editing a user profile and to handle changes in a user's profile once the form is submitted through a POST request by updating the data in the `User` and `Following_User` models.
+    * `check_follow_user` checks if the user is followed through `Following_Users` to update the text value of the follow button in `profile.html` by sending an appropriate json response.
     * `create` handles both rendering of the form for creating an article via a GET request and sending the newly created article data to the `Article` model, the `Original_Article` model (for archival should there be a need to revert to the original version) and the `Group` model (if a group was added) via a POST request.
     * `approve_index` displays either all articles created by the user for non-admins, or all articles created by all users for admins. It displays the user who created the article and its approval status.
     * `approve_view` displays the article pending approval and its approval status. It also handles the approval/rejection of an article when the FETCH request is received.

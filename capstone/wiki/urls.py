@@ -24,5 +24,6 @@ urlpatterns = [
     path("pending", views.approve_index, name="approve_index"),
     path("pending/<str:title>", views.approve_view, name="approve"),
     path("profile/<str:user>", views.profile, name="profile"),
-    path("edit_profile/<str:user>", views.edit_profile, name="edit_profile")
+    path("edit_profile/<str:user>", views.edit_profile, name="edit_profile"),
+    path("follow_user/<str:user>", views.check_follow_user, name="check_follow_user")
     ]

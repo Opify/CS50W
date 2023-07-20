@@ -430,6 +430,15 @@ def follow_article(request, id):
         else:
             return JsonResponse({"followed": "true"})
 
+@login_required
+def check_follow_user(request, user):
+    try:
+        following = Following_User.objects.filter(followint=User.objects.filter(username=user).get(), follower=request.user).get()
+    except:
+        return JsonResponse({"followed": "false"})
+    else:
+        return JsonResponse({"followed": "true"})
+
 # handle query results
 def query(request):
     query = request.GET["q"]
