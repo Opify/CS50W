@@ -78,10 +78,10 @@ function follow_user(event) {
         mode: 'same-origin'        
     })
     .then(() => {
-        if (event.target.value == "Follow") {
-            event.target.value = "Unfollow"
-        } else if (event.target.value == "Unfollow") {
-            event.target.value = "Follow"
+        if (event.target.textContent == "Follow") {
+            event.target.textContent = "Unfollow"
+        } else if (event.target.textContent == "Unfollow") {
+            event.target.textContent = "Follow"
         }
     })
 }
@@ -120,7 +120,7 @@ function comment(event) {
         div.className = "border border-black"
         const user = json["user"]
         const timestamp = json["timestamp"]
-        div.innerHTML = `<p>${user}</p>
+        div.innerHTML = `<p><a href="/profile/${user}"/>${user}</a></p>
         <p>${timestamp}</p>
         <p>${comment}</p>`
         const root = document.querySelector('#comment-view')
@@ -152,7 +152,7 @@ function edit_comment(event) {
         div.className = "border border-black"
         const user = json["user"]
         const timestamp = json["timestamp"]
-        div.innerHTML = `<p>${user}</p>
+        div.innerHTML = `<p><a href="/profile/${user}"/>${user}</a></p>
         <p>${timestamp}</p>
         <p>${edit_comment}</p>`
         const root = document.querySelector('#edit-comment-view')

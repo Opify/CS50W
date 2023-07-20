@@ -366,11 +366,16 @@ def following(request):
     # handle following page
     if request.method == "GET":
         try:
-            following = Following_Article.objects.filter(user=request.user).all()
+            following_articles = Following_Article.objects.filter(user=request.user).all()
         except:
-            following = None
+            following_articles = None
+        try:
+            following_users = Following_User.objects.filter(follower=request.user).all()
+        except:
+            following_users = None
         return render(request, "wiki/following.html", {
-            "following": following
+            "following_articles": following_articles,
+            "following_users": following_users
         })
     # reject all other methods
     else:

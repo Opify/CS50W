@@ -19,7 +19,7 @@
     {% endif %}
     {% if user == profile %}
     <form action="{% url 'edit_profile' profile.username %}">
-        <input type="submit" value="Edit article">
+        <input type="submit" value="Edit profile">
     </form>
     {% elif user.is_authenticated and user != profile %}
     <button id="{{ profile.username }}" class="follow_user">{{ following }}</button>

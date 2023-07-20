@@ -9,7 +9,10 @@
     <h1>All Pages</h1>
 
     <ul>
-        {% for article in following %}
+        {% for profile in following_users %}
+            <li><a href="{% url 'profile' profile.following.username %}">profile/{{ profile.following.username }}</a></li>
+        {% endfor %}
+        {% for article in following_articles %}
             <li><a href="{% url 'article' article.article.title %}">{{ article.article.title }}</a></li>
         {% endfor %}
     </ul>

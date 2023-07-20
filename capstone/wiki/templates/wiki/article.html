@@ -42,7 +42,7 @@
 <div id="comment-view">
     {% for comment in comments %}
     <div class="border border-black">
-        <p>{{ comment.user }}</p>
+        <p><a href="{% url 'profile' comment.user.username %}">{{ comment.user }}</a></p>
         <p>{{ comment.timestamp }}</p>
         <p>{{ comment.comment }}</p>
     </div>
