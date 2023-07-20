@@ -343,12 +343,12 @@ def edit_view(request, id):
             try:
                 grouping = Group.objects.filter(article=article).get()
             except:
-                if edit.group != "":
+                if edit.group is not None:
                     new_grouping = Group(article=article, group=edit.group)
                     new_grouping.save()
             else:
                 if edit.group != grouping.group:
-                    if edit.group == "":
+                    if edit.group is None:
                         grouping.delete()
                     else:
                         grouping.group = edit.group
