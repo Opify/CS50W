@@ -119,7 +119,7 @@ def profile(request, user):
             except:
                 articles = None
             try:
-                following = Following_User.objects.filter(following=User.objects.filter(username=user).get(), follower=request.user)
+                following = Following_User.objects.filter(following=User.objects.filter(username=user).get(), follower=request.user).get()
             except:
                 following = None
             if following:
