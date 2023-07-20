@@ -108,7 +108,7 @@ def profile(request, user):
             return HttpResponseRedirect(reverse("index"))
         else:
             try:
-                expert = Group.objects.filter(expert=profile_info)
+                expert = Group.objects.filter(expert=profile_info).get()
             except:
                 expert = None
             try:
@@ -149,7 +149,7 @@ def edit_profile(request, user):
             try:
                 current_expert = Group.objects.filter(expert=request.user).get()
             except:
-                capitalised = expert.capitalize()
+                capitalised = new_expert.capitalize()
                 updated_expert = Group(expert=request.user, group=capitalised)
                 updated_expert.save()
             else:
