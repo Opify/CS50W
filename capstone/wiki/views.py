@@ -24,7 +24,10 @@ def all_pages(request):
     })
 
 def index(request):
-    day_article = random.choice(Article.objects.filter(status=1).all())
+    try:
+        day_article = random.choice(Article.objects.filter(status=1).all())
+    except:
+        return HttpResponseRedirect(reverse('all_pages'))
     try:
         comments = Comment.objects.filter(article=day_article).order_by('-timestamp').all()
     except:
