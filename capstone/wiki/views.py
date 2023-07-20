@@ -10,16 +10,35 @@ from datetime import datetime
 import json
 import markdown
 import re
+import random
 
 from . import util
 from .models import *
 
 
 # Display all articles
-def index(request):
+def all_pages(request):
     articles = Article.objects.filter(status=1).order_by('-create_timestamp').all()
-    return render(request, "wiki/index.html", {
+    return render(request, "wiki/all_pages.html", {
         "articles": articles
+    })
+
+def index(request):
+    day_article = random.choice(Article.objects.filter(status=1).all())
+    try:
+        comments = Comment.objects.filter(article=day_article).order_by('-timestamp').all()
+    except:
+        comments = None
+    try:
+        group = Group.objects.filter(article=day_article).get()
+    except:
+        group = None
+    content = markdown.markdown(day_article.content)
+    return render(request, "wiki/index.html", {
+        "article": day_article,
+        "content": content,
+        "comments": comments,
+        "group": group
     })
 
 def login_view(request):
@@ -90,7 +109,7 @@ def profile(request, user):
             except:
                 expert = None
             try:
-                articles_created = Article.objects.filter(user=profile_info).all()
+                articles_created = Article.objects.filter(user=profile_info, status=1).all()
                 articles = []
                 for article in articles_created:
                     articles.append(article.title)
@@ -249,6 +268,11 @@ def article(request, title):
             "comments": comments,
             "group": group
         })
+
+# Display random article
+def random_article(request):
+    articles = Article.objects.filter(status=1).values_list('title', flat=True)
+    return HttpResponseRedirect(reverse("article", args=[random.choice(articles)]))
 
 # Display lists of edits for an article
 def edits(request, title):

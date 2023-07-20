@@ -1,17 +1,53 @@
 {% extends "wiki/layout.html" %}
 
 {% block title %}
-    Wiki
+    Article of the day
 {% endblock %}
 
 {% block body %}
-<!-- This page should exist as the default page-->
-    <h1>All Pages</h1>
-
-    <ul>
-        {% for article in articles %}
-            <li><a href="{% url 'article' article.title %}">{{ article.title }}</a></li>
-        {% endfor %}
-    </ul>
-
+<h1>{{ article.title }}</h1>
+<!-- This page should be seen when one finds a valid article-->
+<div id="article-view">
+    {{ content|safe }}
+    {% if group %}
+    <p>Group: <a href="{% url 'group' group.group %}">{{ group.group }}</a></p>
+    {% endif %}
+    <p>Created on: {{ article.create_timestamp }}</p>
+    {% if article.edit_timestamp != None %}
+    <p>Edited on: {{ article.edit_timestamp }}</p>
+    {% endif %}
+</div>
+<div>
+    <form action="{% url 'edits' article.title %}">
+        <input type="submit" value="View edits for article">
+    </form>
+    {% if user.is_authenticated %}
+    <form action="{% url 'edit' article.title %}">
+        <input type="submit" value="Edit article">
+    </form>
+    <form action="{% url 'follow' article.id %}" method="POST">
+        <input type="submit" value="Follow" id="{{ article.id }}" class="follow">
+    </form>
+    {% endif %}
+</div>
+<hr class="divider">
+<h2>Comments</h2>
+{% if user.is_authenticated %}
+<div>
+    <textarea placeholder="Comment here" id="comment"></textarea>
+    <br>
+    <button id="{{ article.id }}" class="comment-button">Comment</button>
+</div>
+{% endif %}
+<div id="comment-view">
+    {% for comment in comments %}
+    <div class="border border-black">
+        <p><a href="{% url 'profile' comment.user.username %}">{{ comment.user }}</a></p>
+        <p>{{ comment.timestamp }}</p>
+        <p>{{ comment.comment }}</p>
+    </div>
+    {% empty %}
+    <p id="no-comment">There are no comments!</p>
+    {% endfor %}
+</div>
 {% endblock %}
