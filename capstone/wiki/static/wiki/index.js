@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function follow_article(event) {
     event.preventDefault()
     const id = event.target.id
-    fetch(`/follow_article/${id}`, {
+    fetch(`/follow/${id}`, {
         method: "POST",
         headers: {'X-CSRFToken': document.cookie.replace('csrftoken=', '')},
         mode: 'same-origin'
