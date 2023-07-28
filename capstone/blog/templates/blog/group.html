@@ -1,0 +1,26 @@
+{% extends "blog/layout.html" %}
+
+{% block title %}
+{{ group }}
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when one tries to search for an post that does not exist -->
+    <h1>{{ group }}</h1>
+    <h2>Interested</h2>
+    <ul>
+        {% for interest in interested %}
+        <li><a href="{% url 'profile' interest.interested %}">{{ interest.interested }}</a></li>
+        {% empty %}
+        <p>There is no one interested!</p>
+        {% endfor %}
+    </ul>
+    <h2>Articles</h2>
+    <ul>
+        {% for post in posts %}
+        <li><a href="{% url 'post' post.post.title %}">{{ post.post.title }}</a></li>
+        {% empty %}
+        <p>There are no posts!</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

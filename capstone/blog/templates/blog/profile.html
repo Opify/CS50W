@@ -1,0 +1,37 @@
+{% extends "blog/layout.html" %}
+
+{% block title %}
+profile/{{ profile.username }}
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when one tries to search for an post that does not exist -->
+    <h1>{{ profile.username }}</h1>
+    {% if profile.bio %}
+    <p>Bio: {{ profile.bio }}</p>
+    {% else %}
+    <p>No bio!</p>
+    {% endif %}
+    {% if interested %}
+    <p>Expert in: {{ interested.group }}</p>
+    {% else %}
+    <p>No expertise</p>
+    {% endif %}
+    {% if user == profile %}
+    <form action="{% url 'edit_profile' profile.username %}">
+        <input type="submit" value="Edit profile">
+    </form>
+    {% elif user.is_authenticated and user != profile %}
+    <button id="{{ profile.username }}" class="follow_user">{{ following }}</button>
+    {% endif %}
+    <hr class="divider">
+    <h2>Posts created:</h2>
+    <ul>
+        {% for post in posts %}
+        <li><a href="{% url 'post' post %}">{{ post }}</a></li>
+        {% empty %}
+        <p>This user has not created any posts!</p>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

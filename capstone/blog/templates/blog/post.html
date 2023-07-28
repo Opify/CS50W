@@ -1,0 +1,55 @@
+{% extends "blog/layout.html" %}
+
+{% block title %}
+    {{ post.title }}
+{% endblock %}
+
+{% block body %}
+<h1>{{ post.title }}</h1>
+<!-- This page should be seen when one finds a valid post-->
+<div id="post-view">
+    {{ content|safe }}
+    {% if group %}
+    <p>Group: <a href="{% url 'group' group.group %}">{{ group.group }}</a></p>
+    {% endif %}
+    <p>Created on: {{ post.create_timestamp }}</p>
+    {% if post.edit_timestamp != None %}
+    <p>Edited on: {{ post.edit_timestamp }}</p>
+    {% endif %}
+</div>
+<div>
+    {% if user.is_superuser or user == post.user %}
+    <form action="{% url 'edits' post.title %}">
+        <input type="submit" value="View edits for post">
+    </form>
+    <form action="{% url 'edit' post.title %}">
+        <input type="submit" value="Edit post">
+    </form>
+    {% endif %}
+    {% if user != post.user and user.is_authenticated %}
+    <form action="{% url 'follow' post.id %}" method="POST">
+        <input type="submit" value="Follow" id="{{ post.id }}" class="follow">
+    </form>
+    {% endif %}
+</div>
+<hr class="divider">
+<h2>Comments</h2>
+{% if user.is_authenticated %}
+<div>
+    <textarea placeholder="Comment here" id="comment"></textarea>
+    <br>
+    <button id="{{ post.id }}" class="comment-button">Comment</button>
+</div>
+{% endif %}
+<div id="comment-view">
+    {% for comment in comments %}
+    <div class="border border-black">
+        <p><a href="{% url 'profile' comment.user.username %}">{{ comment.user }}</a></p>
+        <p>{{ comment.timestamp }}</p>
+        <p>{{ comment.comment }}</p>
+    </div>
+    {% empty %}
+    <p id="no-comment">There are no comments!</p>
+    {% endfor %}
+</div>
+{% endblock %}

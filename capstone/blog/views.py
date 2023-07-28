@@ -1,0 +1,373 @@
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+import json
+import markdown
+import re
+import random
+
+from . import util
+from .models import *
+
+
+def index(request):
+    try:
+        day_post = random.choice(Post.objects.filter(status=1).all())
+    except:
+        return HttpResponseRedirect(reverse('all_pages'))
+    try:
+        comments = Comment.objects.filter(post=day_post).order_by('-timestamp').all()
+    except:
+        comments = None
+    try:
+        group = Group.objects.filter(post=day_post).get()
+    except:
+        group = None
+    content = markdown.markdown(day_post.content)
+    return render(request, "blog/index.html", {
+        "post": day_post,
+        "content": content,
+        "comments": comments,
+        "group": group
+    })
+
+def login_view(request):
+    if request.method == "POST":
+        # Attempt to sign user in
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        # Check if authentication successful
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "blog/login.html", {
+                "message": "Invalid username and/or password."
+            })
+    else:
+        return render(request, "blog/login.html")
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse("index"))
+
+def register(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+        # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if password != confirmation:
+            return render(request, "blog/register.html", {
+                "message": "Passwords must match."
+            })
+        # Attempt to create new user
+        try:
+            user = User.objects.create_user(username, email, password)
+            user.save()
+        except IntegrityError:
+            return render(request, "blog/register.html", {
+                "message": "Username already taken."
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return render(request, "blog/register.html")
+
+# handle rendering of profile page and following user
+def profile(request, user):
+    if request.method == "POST":
+        try:
+            following = Following.objects.filter(following=User.objects.get(username=user), follower=request.user).get()
+        except:
+            following = Following(following=User.objects.get(username=user), follower=request.user)
+            following.save()
+            return HttpResponse(200)
+        else:
+            following.delete()
+            return HttpResponse(200)
+    else:
+        try:
+            profile_info = User.objects.filter(username=user).get()
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            try:
+                interests = Group.objects.filter(interested=profile_info).get()
+            except:
+                interests = None
+            try:
+                posts_created = Post.objects.filter(user=profile_info, status=1).all()
+                posts = []
+                for post in posts_created:
+                    posts.append(post.title)
+            except:
+                posts = None
+            try:
+                following = Following.objects.filter(following=User.objects.filter(username=user).get(), follower=request.user).get()
+            except:
+                following = None
+            if following:
+                following = "Unfollow"
+            else:
+                following = "Follow"
+            return render(request, "blog/profile.html", {
+                "profile": profile_info,
+                "interests": interests,
+                "posts": posts,
+                "following": following
+            })
+
+@login_required
+def edit_profile(request, user):
+    if request.method == "POST":
+        bio = request.POST["bio"]
+        new_interests = request.POST["group"]
+        if new_interests == "":
+            try:
+                current_interests = Group.objects.filter(interested=request.user).get()
+            except:
+                pass
+            else:
+                current_interests.delete()
+        else:
+            try:
+                current_interests = Group.objects.filter(interested=request.user).get()
+            except:
+                capitalised = new_interests.capitalize()
+                updated_interests = Group(interested=request.user, group=capitalised)
+                updated_interests.save()
+            else:
+                capitalised = new_interests.capitalize()
+                current_interests.group = capitalised
+                current_interests.save()
+        profile = User.objects.filter(username=user).get()
+        profile.bio = bio
+        profile.save()
+        return HttpResponseRedirect(reverse('profile', args=[user]))
+    else:
+        try:
+            profile = User.objects.filter(username=user).get()
+        except:
+            return HttpResponseRedirect(reverse('index'))
+        try:
+            interest = Group.objects.filter(interested=request.user).get()
+        except:
+            interest = None
+        return render(request, "blog/edit_profile.html", {
+            "profile": profile,
+            "interest": interest
+        })
+
+@login_required
+def create(request):
+    # handle post creation
+    if request.method == "POST":
+        title = request.POST.get("title")
+        content = request.POST.get("content")
+        group = request.POST.get("group")
+        # checks if post already exists via title
+        try:
+            Post.objects.filter(title=title).get()
+        except:
+            if group != "":
+                capitalised = group.capitalize()
+                post = Post(user=request.user, title=title, content=content, create_timestamp=datetime.now())
+                post.save()
+                grouping = Group(post=post, group=capitalised)
+                grouping.save()
+            else:
+                post = Post(user=request.user, title=title, content=content, create_timestamp=datetime.now())
+                post.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return HttpResponseRedirect(reverse("index"))
+    # handle getting to form
+    else:
+        return render(request, "blog/create.html")
+
+# Display post and coments
+def post(request, title):
+    try:
+        post = Post.objects.filter(title=title).get()
+    except:
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        try:
+            comments = Comment.objects.filter(post=post).order_by('-timestamp').all()
+        except:
+            comments = None
+        try:
+            group = Group.objects.filter(post=post).get()
+        except:
+            group = None
+        content = markdown.markdown(post.content)
+        return render(request, "blog/post.html", {
+            "post": post,
+            "content": content,
+            "comments": comments,
+            "group": group
+        })
+
+# Display random post
+def random_post(request):
+    posts = Post.objects.values_list('title', flat=True)
+    return HttpResponseRedirect(reverse("post", args=[random.choice(posts)]))
+
+# Display lists of edits for an post
+def edits(request, title):
+    try:
+        post = Post.objects.filter(title=title).get()
+        edits = Edit.objects.filter(post=post).order_by('-timestamp').all()
+    except:
+        return HttpResponseRedirect(reverse("post", args=[title]))
+    else:
+        changes = []
+        for edit in edits:
+            list = []
+            list.append(edit)
+            list.append(util.track_changes(post.content, edit.content))
+            changes.append(list)
+        # if you're wondering how each change is stored, index 0 is the edit itself, index 1 is the list used to display changes made
+        return render(request, "blog/edits.html", {
+            "changes": changes,
+            "title": title
+        })
+
+@login_required
+# handle edits
+def edit(request, title):
+    # handle edit logic
+    if request.method == "POST":
+        try:
+            post = Post.objects.filter(title=title).get()
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            group = request.POST.get("group")
+            if group != "":
+                capitalised = group.capitalize()
+                edit = Edit(post=post, user=request.user, title=request.POST.get("title"), content=request.POST.get("content"), timestamp=datetime.now(), group=capitalised)
+            else:
+                edit = Edit(post=post, user=request.user, title=request.POST.get("title"), content=request.POST.get("content"), timestamp=datetime.now())
+            edit.save()
+            return HttpResponseRedirect(reverse("post", args=[title]))
+    # handle edit page
+    else:
+        try:
+            post = Post.objects.filter(title=title).get()
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "blog/edit.html", {
+                "post": post
+            })
+
+# Display view edits and approval/rejection
+def edit_view(request, id):
+    try:
+        edit = Edit.objects.get(pk=id)
+    except:
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        post = edit.post
+        content = markdown.markdown(edit.content)
+        return render(request, "blog/edit_view.html", {
+            "edit": edit,
+            "content": content,
+            "post": post
+        })
+
+# handle following page and getting to following
+@login_required
+def following(request):
+    # handle following page
+    if request.method == "GET":
+        try:
+            following_users = Following.objects.filter(follower=request.user).all()
+        except:
+            following_users = None
+        return render(request, "blog/following.html", {
+            "following_users": following_users
+        })
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
+@login_required
+def check_follow_user(request, user):
+    try:
+        following = Following.objects.filter(following=User.objects.filter(username=user).get(), follower=request.user).get()
+    except:
+        return JsonResponse({"followed": "false"})
+    else:
+        return JsonResponse({"followed": "true"})
+
+# handle query results
+def query(request):
+    query = request.GET["q"]
+    posts = Post.objects.values_list('title', flat=True)
+    if query in posts:
+        return HttpResponseRedirect(reverse("post", args=[query]))
+    else:
+        suggestions = []
+        # use regex to generate list of suggested posts
+        for post in posts:
+            if re.search(query, post) is not None:
+                suggestions.append(post)
+        return render(request, "blog/query.html", {
+            "results": suggestions
+        })
+
+@login_required    
+# handle uploading comments from posts
+def comment(request, id):
+    if request.method == "POST":
+        body = json.loads(request.body)
+        content = body.get("comment")
+        timestamp = datetime.now()
+        user = request.user
+        comment = Comment(post=Post.objects.get(pk=id), user=user, comment=content, timestamp=timestamp)
+        comment.save()
+        return JsonResponse({"timestamp": timestamp.strftime('%B %d, %Y, %I:%M %p'), "user": request.user.username})
+    # reject all other methods
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
+# Display lists of groups
+def group_index(request):
+    raw = Group.objects.values_list("group", flat=True)
+    # get unique groups
+    groups = set(raw)
+    return render(request, "blog/groups.html", {
+        "groups": groups
+    })
+
+# Display interests and posts in a group
+def group(request, group):
+    try:
+        entries = Group.objects.filter(group=group).all()
+    except:
+        return HttpResponseRedirect(reverse(index))
+    interested = []
+    posts = []
+    for entry in entries:
+        # if interest is null, it must be an post
+        if not entry.interested:
+            posts.append(entry)
+        # if post is null, it must be an interest
+        elif not entry.post:
+            interested.append(entry)
+    return render(request, "blog/group.html", {
+        "interested": interested,
+        "posts": posts,
+        "group": group
+    })

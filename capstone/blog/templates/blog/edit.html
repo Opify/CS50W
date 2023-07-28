@@ -1,0 +1,29 @@
+{% extends "blog/layout.html" %}
+
+{% block title %}
+Edit post
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when creating an post-->
+    <h1>Edit post</h1>
+<form action="{% url 'edit' post.title %}" method="post">
+    {% csrf_token %}
+    <div>
+        <input type="text" name="title" placeholder="Summary of changes" id="create-title" required>
+    </div>
+    <div>
+        <textarea name="content" placeholder="Lorem Ipsum" id="create-content">{{ post.content }}</textarea>    
+    </div>
+    <div>
+        {% if interest %}
+        <input type="text" name="group" placeholder="Expert (optional)" id="create-group" value="{{ interest }}">
+        {% else %}
+        <input type="text" name="group" placeholder="Expert (optional)" id="create-group">
+        {% endif %}
+    </div>
+    <div>
+        <input type="submit" value="Propose edits">
+    </div>
+</form>
+{% endblock %}

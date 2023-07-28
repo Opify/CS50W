@@ -1,0 +1,17 @@
+{% extends "blog/layout.html" %}
+
+{% block title %}
+    Following
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist as the default page-->
+    <h1>Following</h1>
+
+    <ul>
+        {% for profile in following_users %}
+            <li><a href="{% url 'profile' profile.following.username %}">profile/{{ profile.following.username }}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

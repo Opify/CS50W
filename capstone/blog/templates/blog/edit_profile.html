@@ -1,0 +1,30 @@
+{% extends "blog/layout.html" %}
+
+{% block title %}
+Edit profile
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when creating an article-->
+    <h1>Edit profile</h1>
+<form action="{% url 'edit_profile' profile.username %}" method="post">
+    {% csrf_token %}
+    <div>
+        {% if profile.bio %}
+        <textarea name="bio" placeholder="Lorem Ipsum" id="create-content">{{ profile.bio }}</textarea>
+        {% else %}
+        <textarea name="bio" placeholder="Lorem Ipsum" id="create-content"></textarea>
+        {% endif %}
+    </div>
+    <div>
+        {% if interest %}
+        <input type="text" name="group" placeholder="Expert (optional)" id="create-group" value="{{ interest }}">
+        {% else %}
+        <input type="text" name="group" placeholder="Expert (optional)" id="create-group">
+        {% endif %}
+    </div>
+    <div>
+        <input type="submit" value="Edit profile">
+    </div>
+</form>
+{% endblock %}

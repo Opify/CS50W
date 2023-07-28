@@ -1,0 +1,18 @@
+{% extends "blog/layout.html" %}
+
+{% block title %}
+Groups
+{% endblock %}
+
+{% block body %}
+<!-- This page should exist when one tries to search for an article that does not exist -->
+    <h1>Groups</h1>
+    <ul>
+        {% for group in groups %}
+        <li><a href="{% url 'group' group %}">{{ group }}</a></li>
+        {% empty %}
+        <p>There are no groups!</p>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
