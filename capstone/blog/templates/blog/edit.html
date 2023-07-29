@@ -10,16 +10,13 @@ Edit post
 <form action="{% url 'edit' post.title %}" method="post">
     {% csrf_token %}
     <div>
-        <input type="text" name="title" placeholder="Summary of changes" id="create-title" required>
-    </div>
-    <div>
         <textarea name="content" placeholder="Lorem Ipsum" id="create-content">{{ post.content }}</textarea>    
     </div>
     <div>
-        {% if interest %}
-        <input type="text" name="group" placeholder="Expert (optional)" id="create-group" value="{{ interest }}">
+        {% if groups %}
+        <input type="text" name="group" placeholder="Group1, Group2, ... (optional)" id="create-group" value="{{ groups }}">
         {% else %}
-        <input type="text" name="group" placeholder="Expert (optional)" id="create-group">
+        <input type="text" name="group" placeholder="Group1, Group2, ... (optional)" id="create-group">
         {% endif %}
     </div>
     <div>

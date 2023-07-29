@@ -12,10 +12,13 @@ profile/{{ profile.username }}
     {% else %}
     <p>No bio!</p>
     {% endif %}
-    {% if interested %}
-    <p>Expert in: {{ interested.group }}</p>
+    {% if interests %}
+    <p>Interested in:
+    {% for interest in interests %}
+    <span><a href="{% url 'group' interest.group %}"> {{ interest.group }}</a></span>
+    {% endfor %}
     {% else %}
-    <p>No expertise</p>
+    <p>No interests!</p>
     {% endif %}
     {% if user == profile %}
     <form action="{% url 'edit_profile' profile.username %}">

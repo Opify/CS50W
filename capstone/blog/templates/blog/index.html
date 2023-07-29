@@ -8,6 +8,7 @@
 <h1>{{ post.title }}</h1>
 <!-- This page should be seen when one finds a valid post-->
 <div id="post-view">
+    <p>Created by: <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></p>
     {{ content|safe }}
     {% if group %}
     <p>Group: <a href="{% url 'group' group.group %}">{{ group.group }}</a></p>

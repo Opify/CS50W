@@ -18,9 +18,9 @@ from .models import *
 
 def index(request):
     try:
-        day_post = random.choice(Post.objects.filter(status=1).all())
+        day_post = random.choice(Post.objects.all())
     except:
-        return HttpResponseRedirect(reverse('all_pages'))
+        return HttpResponseRedirect(reverse('all_posts'))
     try:
         comments = Comment.objects.filter(post=day_post).order_by('-timestamp').all()
     except:
@@ -36,6 +36,16 @@ def index(request):
         "comments": comments,
         "group": group
     })
+
+def all_posts(request):
+    try:
+        posts = Post.objects.order_by('-create_timestamp').all()
+    except:
+        posts = None
+    return render(request, "blog/all_pages.html", {
+        "posts": posts
+    })
+
 
 def login_view(request):
     if request.method == "POST":
@@ -101,11 +111,11 @@ def profile(request, user):
             return HttpResponseRedirect(reverse("index"))
         else:
             try:
-                interests = Group.objects.filter(interested=profile_info).get()
+                interests = Group.objects.filter(interested=profile_info).all()
             except:
                 interests = None
             try:
-                posts_created = Post.objects.filter(user=profile_info, status=1).all()
+                posts_created = Post.objects.filter(user=profile_info).all()
                 posts = []
                 for post in posts_created:
                     posts.append(post.title)
@@ -131,27 +141,26 @@ def edit_profile(request, user):
     if request.method == "POST":
         bio = request.POST["bio"]
         new_interests = request.POST["group"]
+        profile = User.objects.filter(username=user).get()
+        profile.bio = bio
+        profile.save()
         if new_interests == "":
             try:
-                current_interests = Group.objects.filter(interested=request.user).get()
+                current_interests = Group.objects.filter(interested=request.user).all()
             except:
                 pass
             else:
                 current_interests.delete()
         else:
+            interests = new_interests.split(", ")
             try:
-                current_interests = Group.objects.filter(interested=request.user).get()
+                current_interests = Group.objects.filter(interested=request.user).all()
             except:
-                capitalised = new_interests.capitalize()
-                updated_interests = Group(interested=request.user, group=capitalised)
-                updated_interests.save()
-            else:
-                capitalised = new_interests.capitalize()
-                current_interests.group = capitalised
-                current_interests.save()
-        profile = User.objects.filter(username=user).get()
-        profile.bio = bio
-        profile.save()
+                current_interests.delete()
+            for interest in interests:
+                capitalised = interest.capitalize()
+                new_interest = Group(interested=request.user, group=capitalised)
+                new_interest.save()
         return HttpResponseRedirect(reverse('profile', args=[user]))
     else:
         try:
@@ -159,7 +168,8 @@ def edit_profile(request, user):
         except:
             return HttpResponseRedirect(reverse('index'))
         try:
-            interest = Group.objects.filter(interested=request.user).get()
+            interest = Group.objects.filter(interested=request.user).values_list('group', flat=True)
+            interest = ", ".join(interest)
         except:
             interest = None
         return render(request, "blog/edit_profile.html", {
@@ -173,21 +183,20 @@ def create(request):
     if request.method == "POST":
         title = request.POST.get("title")
         content = request.POST.get("content")
-        group = request.POST.get("group")
+        groups = request.POST.get("group")
         # checks if post already exists via title
         try:
             Post.objects.filter(title=title).get()
         except:
-            if group != "":
-                capitalised = group.capitalize()
-                post = Post(user=request.user, title=title, content=content, create_timestamp=datetime.now())
-                post.save()
-                grouping = Group(post=post, group=capitalised)
-                grouping.save()
-            else:
-                post = Post(user=request.user, title=title, content=content, create_timestamp=datetime.now())
-                post.save()
-            return HttpResponseRedirect(reverse("index"))
+            post = Post(user=request.user, title=title, content=content, create_timestamp=datetime.now())
+            post.save()
+            if groups != "":
+                groups.split(", ")
+                for group in groups:
+                    capitalised = group.capitalize()
+                    grouping = Group(post=post, group=capitalised)
+                    grouping.save()
+            return HttpResponseRedirect(reverse("post", args=[title]))
         else:
             return HttpResponseRedirect(reverse("index"))
     # handle getting to form
@@ -206,7 +215,7 @@ def post(request, title):
         except:
             comments = None
         try:
-            group = Group.objects.filter(post=post).get()
+            group = Group.objects.filter(post=post).all()
         except:
             group = None
         content = markdown.markdown(post.content)
@@ -253,12 +262,33 @@ def edit(request, title):
             return HttpResponseRedirect(reverse("index"))
         else:
             group = request.POST.get("group")
+            content = request.POST.get("content")
             if group != "":
-                capitalised = group.capitalize()
-                edit = Edit(post=post, user=request.user, title=request.POST.get("title"), content=request.POST.get("content"), timestamp=datetime.now(), group=capitalised)
+                try:
+                    original_groups = Group.objects.filter(post=post).all()
+                except:
+                    pass
+                else:
+                    original_groups.delete()
+                groups = group.split(", ")
+                for value in groups:
+                    capitalised = value.capitalize()
+                    new_group = Group(post=post, group=capitalised)
+                    new_group.save()
+                edit = Edit(post=post, user=request.user, content=content, timestamp=datetime.now(), groups=", ".join(groups))
+                edit.save()
             else:
-                edit = Edit(post=post, user=request.user, title=request.POST.get("title"), content=request.POST.get("content"), timestamp=datetime.now())
-            edit.save()
+                try:
+                    original_groups = Group.objects.filter(post=post).all()
+                except:
+                    pass
+                else:
+                    original_groups.delete()
+                edit = Edit(post=post, user=request.user, content=content, timestamp=datetime.now())
+                edit.save()
+            post.content = content
+            post.edit_timestamp = datetime.now()
+            post.save()
             return HttpResponseRedirect(reverse("post", args=[title]))
     # handle edit page
     else:
@@ -267,11 +297,17 @@ def edit(request, title):
         except:
             return HttpResponseRedirect(reverse("index"))
         else:
+            try:
+                groups = Group.objects.filter(post=post).values_list('group', flat=True)
+                groups = ", ".join(groups)
+            except:
+                groups = None
             return render(request, "blog/edit.html", {
-                "post": post
+                "post": post,
+                "groups": groups
             })
 
-# Display view edits and approval/rejection
+# Display view edits
 def edit_view(request, id):
     try:
         edit = Edit.objects.get(pk=id)

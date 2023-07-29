@@ -1,7 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 class User(AbstractUser):
@@ -25,10 +23,9 @@ class Comment(models.Model):
 class Edit(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="edit")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="edit_user")
-    title = models.CharField(max_length=100)
     content = models.TextField()
     timestamp = models.DateTimeField()
-    group = models.CharField(max_length=50)
+    groups = models.CharField(max_length=50, blank=True, null=True)
     
 class Following(models.Model):
     following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followed_user")
