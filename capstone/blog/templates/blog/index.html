@@ -5,13 +5,18 @@
 {% endblock %}
 
 {% block body %}
+<div class="content-container" style="background:{{ background_colour }}">
+<h1>Article of the day</h1>
 <h1>{{ post.title }}</h1>
 <!-- This page should be seen when one finds a valid post-->
 <div id="post-view">
     <p>Created by: <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></p>
     {{ content|safe }}
-    {% if group %}
-    <p>Group: <a href="{% url 'group' group.group %}">{{ group.group }}</a></p>
+    {% if groups %}
+    <p>Groups:</p>
+    {% for group in groups %}
+    <span><a href="{% url 'group' group.group %}"> {{ group.group }}</a></span>
+    {% endfor %}
     {% endif %}
     <p>Created on: {{ post.create_timestamp }}</p>
     {% if post.edit_timestamp != None %}
@@ -52,5 +57,6 @@
     {% empty %}
     <p id="no-comment">There are no comments!</p>
     {% endfor %}
+</div>
 </div>
 {% endblock %}

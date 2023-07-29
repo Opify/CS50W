@@ -5,13 +5,17 @@
 {% endblock %}
 
 {% block body %}
-<h1>{{ post.title }}</h1>
+<div class="content-container" style="background:{{ background_colour }}">
+    <h1>{{ post.title }}</h1>
 <!-- This page should be seen when one finds a valid post-->
 <div id="post-view">
     <p>Created by: <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></p>
     {{ content|safe }}
-    {% if group %}
-    <p>Group: <a href="{% url 'group' group.group %}">{{ group.group }}</a></p>
+    {% if groups %}
+    <p>Groups:</p>
+    {% for group in groups %}
+    <span><a href="{% url 'group' group.group %}"> {{ group.group }}</a></span>
+    {% endfor %}
     {% endif %}
     <p>Created on: {{ post.create_timestamp }}</p>
     {% if post.edit_timestamp != None %}
@@ -33,6 +37,20 @@
     </form>
     {% endif %}
 </div>
+<div class="paginate">
+    {% if first %}
+    <button onclick="window.location.href='{% url 'post' first %}';">Latest Post</button>
+    {% endif %}
+    {% if next %}
+    <button onclick="window.location.href='{% url 'post' next %}';">Next</button>
+    {% endif %}
+    {% if previous %}
+    <button onclick="window.location.href='{% url 'post' previous %}';">Previous</button>
+    {% endif %}
+    {% if last %}
+    <button onclick="window.location.href='{% url 'post' last %}';">First Post</button>
+    {% endif %}
+</div>
 <hr class="divider">
 <h2>Comments</h2>
 {% if user.is_authenticated %}
@@ -52,5 +70,6 @@
     {% empty %}
     <p id="no-comment">There are no comments!</p>
     {% endfor %}
+</div>
 </div>
 {% endblock %}

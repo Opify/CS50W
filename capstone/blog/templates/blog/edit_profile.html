@@ -24,6 +24,13 @@ Edit profile
         {% endif %}
     </div>
     <div>
+        {% if background_colour %}
+        <input type="text" name="background_colour" placeholder="CSS property (optional)" id="create-background_colour" value="{{ background_colour }}">
+        {% else %}
+        <input type="text" name="background_colour" placeholder="CSS property (optional)" id="create-background_colour">
+        {% endif %}
+    </div>
+    <div>
         <input type="submit" value="Edit profile">
     </div>
 </form>

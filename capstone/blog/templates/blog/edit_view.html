@@ -1,16 +1,16 @@
 {% extends "blog/layout.html" %}
 
 {% block title %}
-    {{ edit.title }}
+    {{ post.title }}
 {% endblock %}
 
 {% block body %}
-<h1>{{ edit.title }}</h1>
+<h1>{{ post.title }}</h1>
 <!-- This page should be seen when one finds a valid article-->
 <div id="edit-view">
     {{ content|safe }}
-    {% if edit.group %}
-    <p>Group: <a href="{% url 'group' edit.group %}">{{ edit.group }}</a></p>
+    {% if edit.groups %}
+    <p>Group(s): {{ edit.groups }}</p>
     {% endif %}
 </div>
 {% endblock %}

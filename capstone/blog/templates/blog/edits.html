@@ -9,8 +9,7 @@
     <h1>Edits for {{ title }}</h1>
         {% for change in changes %}
             <div class="border border-dark">
-                <h3>Edit #{{ change.0.id }}</h3>
-                <p><a href="{% url 'edit_view' change.0.id %}">{{ change.0.title }}</a></p>
+                <h3><a href="{% url 'edit_view' change.0.id %}">Edit #{{ change.0.id }}</a></h3>
                 <p>{{ change.0.timestamp }}</p>
                 {% if change.1.0 %}
                 <h3>Sentences added</h3>
@@ -25,7 +24,6 @@
                 <p>Line number: {{ removal.line_number }}</p>
                 <p>{{ removal.sentence }}</p>
                 {% endfor %}
-                {% endif %}
                 {% endif %}
             </div>
         {% endfor %}

@@ -4,6 +4,7 @@ from django.db import models
 # Create your models here.
 class User(AbstractUser):
     bio = models.TextField(blank=True, null=True)
+    background_color = models.CharField(max_length=50, blank=True, null=True)
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post_user")
@@ -23,7 +24,8 @@ class Comment(models.Model):
 class Edit(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="edit")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="edit_user")
-    content = models.TextField()
+    old_content = models.TextField()
+    new_content = models.TextField()
     timestamp = models.DateTimeField()
     groups = models.CharField(max_length=50, blank=True, null=True)
     

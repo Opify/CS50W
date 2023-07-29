@@ -26,15 +26,20 @@ def index(request):
     except:
         comments = None
     try:
-        group = Group.objects.filter(post=day_post).get()
+        groups = Group.objects.filter(post=day_post).all()
     except:
-        group = None
+        groups = None
+    try:
+        background_colour = day_post.user.background_color
+    except:
+        background_colour = None
     content = markdown.markdown(day_post.content)
     return render(request, "blog/index.html", {
         "post": day_post,
         "content": content,
         "comments": comments,
-        "group": group
+        "groups": groups,
+        "background_colour": background_colour
     })
 
 def all_posts(request):
@@ -125,6 +130,10 @@ def profile(request, user):
                 following = Following.objects.filter(following=User.objects.filter(username=user).get(), follower=request.user).get()
             except:
                 following = None
+            try:
+                background_colour = profile_info.background_color
+            except:
+                background_colour = None
             if following:
                 following = "Unfollow"
             else:
@@ -133,7 +142,8 @@ def profile(request, user):
                 "profile": profile_info,
                 "interests": interests,
                 "posts": posts,
-                "following": following
+                "following": following,
+                "background_colour": background_colour
             })
 
 @login_required
@@ -141,8 +151,13 @@ def edit_profile(request, user):
     if request.method == "POST":
         bio = request.POST["bio"]
         new_interests = request.POST["group"]
+        background_colour = request.POST["background_colour"]
         profile = User.objects.filter(username=user).get()
         profile.bio = bio
+        if background_colour != "":
+            profile.background_color = background_colour
+        else:
+            profile.background_color = None
         profile.save()
         if new_interests == "":
             try:
@@ -172,9 +187,14 @@ def edit_profile(request, user):
             interest = ", ".join(interest)
         except:
             interest = None
+        try:
+            background_colour = profile.background_color
+        except:
+            background_colour = None
         return render(request, "blog/edit_profile.html", {
             "profile": profile,
-            "interest": interest
+            "interest": interest,
+            "background_colour": background_colour
         })
 
 @login_required
@@ -215,21 +235,53 @@ def post(request, title):
         except:
             comments = None
         try:
-            group = Group.objects.filter(post=post).all()
+            groups = Group.objects.filter(post=post).all()
         except:
-            group = None
+            groups = None
+        titles = list(Post.objects.filter(user=post.user).order_by('-create_timestamp').values_list('title', flat=True))
+        if len(titles) > 1:
+            if title == titles[0]:
+                first = None
+                previous = titles[1]
+                next = None
+                last = titles[-1]
+            elif title == titles[-1]:
+                first = titles[0]
+                previous = None
+                next = titles[-2]
+                last = None
+            elif len(titles) > 2:
+                first = titles[0]
+                previous = titles[titles.index(title) + 1]
+                next = titles[titles.index(title) - 1]
+                last = titles[-1]
+        else:
+            previous = None
+            next = None
         content = markdown.markdown(post.content)
+        try:
+            background_colour = post.user.background_color
+        except:
+            background_colour = None
         return render(request, "blog/post.html", {
             "post": post,
             "content": content,
             "comments": comments,
-            "group": group
+            "groups": groups,
+            "first": first,
+            "previous": previous,
+            "next": next,
+            "last": last,
+            "background_colour": background_colour
         })
 
 # Display random post
 def random_post(request):
-    posts = Post.objects.values_list('title', flat=True)
-    return HttpResponseRedirect(reverse("post", args=[random.choice(posts)]))
+    try:
+        posts = Post.objects.values_list('title', flat=True)
+        return HttpResponseRedirect(reverse("post", args=[random.choice(posts)]))
+    except:
+        return HttpResponseRedirect(reverse("index"))
 
 # Display lists of edits for an post
 def edits(request, title):
@@ -243,7 +295,7 @@ def edits(request, title):
         for edit in edits:
             list = []
             list.append(edit)
-            list.append(util.track_changes(post.content, edit.content))
+            list.append(util.track_changes(edit.old_content, edit.new_content))
             changes.append(list)
         # if you're wondering how each change is stored, index 0 is the edit itself, index 1 is the list used to display changes made
         return render(request, "blog/edits.html", {
@@ -275,7 +327,7 @@ def edit(request, title):
                     capitalised = value.capitalize()
                     new_group = Group(post=post, group=capitalised)
                     new_group.save()
-                edit = Edit(post=post, user=request.user, content=content, timestamp=datetime.now(), groups=", ".join(groups))
+                edit = Edit(post=post, user=request.user, old_content=post.content, new_content=content, timestamp=datetime.now(), groups=", ".join(groups))
                 edit.save()
             else:
                 try:
@@ -284,7 +336,7 @@ def edit(request, title):
                     pass
                 else:
                     original_groups.delete()
-                edit = Edit(post=post, user=request.user, content=content, timestamp=datetime.now())
+                edit = Edit(post=post, user=request.user, old_content=post.content, new_content=content, timestamp=datetime.now())
                 edit.save()
             post.content = content
             post.edit_timestamp = datetime.now()
@@ -315,7 +367,7 @@ def edit_view(request, id):
         return HttpResponseRedirect(reverse("index"))
     else:
         post = edit.post
-        content = markdown.markdown(edit.content)
+        content = markdown.markdown(edit.new_content)
         return render(request, "blog/edit_view.html", {
             "edit": edit,
             "content": content,
