@@ -231,7 +231,7 @@ def create(request):
             post = Post(user=request.user, title=title, content=content, create_timestamp=datetime.now())
             post.save()
             if groups != "":
-                groups.split(", ")
+                groups = groups.split(", ")
                 for group in groups:
                     capitalised = group.capitalize()
                     grouping = Group(post=post, group=capitalised)
@@ -276,8 +276,10 @@ def post(request, title):
                 next = titles[titles.index(title) - 1]
                 last = titles[-1]
         else:
+            first = None
             previous = None
             next = None
+            last = None
         content = markdown.markdown(post.content)
         try:
             background_colour = post.user.background_color
