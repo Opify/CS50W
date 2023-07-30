@@ -55,3 +55,11 @@ html, body {
     height: 100%;
     width: 100%;
 }
+
+#edit_background_colour {
+    width: 60vw;
+}
+
+#edit_bio {
+    width: 60vw;
+}

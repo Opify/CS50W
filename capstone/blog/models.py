@@ -5,6 +5,7 @@ from django.db import models
 class User(AbstractUser):
     bio = models.TextField(blank=True, null=True)
     background_color = models.CharField(max_length=50, blank=True, null=True)
+    text_color = models.CharField(max_length=50, blank=True, null=True)
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post_user")

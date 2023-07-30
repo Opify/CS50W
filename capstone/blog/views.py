@@ -33,13 +33,18 @@ def index(request):
         background_colour = day_post.user.background_color
     except:
         background_colour = None
+    try:
+        text_colour = day_post.user.text_color
+    except:
+        text_colour = None
     content = markdown.markdown(day_post.content)
     return render(request, "blog/index.html", {
         "post": day_post,
         "content": content,
         "comments": comments,
         "groups": groups,
-        "background_colour": background_colour
+        "background_colour": background_colour,
+        "text_colour": text_colour
     })
 
 def all_posts(request):
@@ -134,6 +139,10 @@ def profile(request, user):
                 background_colour = profile_info.background_color
             except:
                 background_colour = None
+            try:
+                text_colour = profile_info.text_color
+            except:
+                text_colour = None
             if following:
                 following = "Unfollow"
             else:
@@ -143,7 +152,8 @@ def profile(request, user):
                 "interests": interests,
                 "posts": posts,
                 "following": following,
-                "background_colour": background_colour
+                "background_colour": background_colour,
+                "text_colour": text_colour
             })
 
 @login_required
@@ -152,12 +162,17 @@ def edit_profile(request, user):
         bio = request.POST["bio"]
         new_interests = request.POST["group"]
         background_colour = request.POST["background_colour"]
+        text_colour = request.POST["text_colour"]
         profile = User.objects.filter(username=user).get()
         profile.bio = bio
         if background_colour != "":
             profile.background_color = background_colour
         else:
             profile.background_color = None
+        if text_colour != "":
+            profile.text_color = text_colour
+        else:
+            profile.text_color = None
         profile.save()
         if new_interests == "":
             try:
@@ -191,10 +206,15 @@ def edit_profile(request, user):
             background_colour = profile.background_color
         except:
             background_colour = None
+        try:
+            text_colour = profile.text_color
+        except:
+            text_colour = None
         return render(request, "blog/edit_profile.html", {
             "profile": profile,
             "interest": interest,
-            "background_colour": background_colour
+            "background_colour": background_colour,
+            "text_colour": text_colour
         })
 
 @login_required
@@ -263,6 +283,10 @@ def post(request, title):
             background_colour = post.user.background_color
         except:
             background_colour = None
+        try:
+            text_colour = post.user.text_color
+        except:
+            text_colour = None
         return render(request, "blog/post.html", {
             "post": post,
             "content": content,
@@ -272,7 +296,8 @@ def post(request, title):
             "previous": previous,
             "next": next,
             "last": last,
-            "background_colour": background_colour
+            "background_colour": background_colour,
+            "text_colour": text_colour
         })
 
 # Display random post

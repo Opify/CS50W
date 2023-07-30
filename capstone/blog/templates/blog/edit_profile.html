@@ -11,23 +11,30 @@ Edit profile
     {% csrf_token %}
     <div>
         {% if profile.bio %}
-        <textarea name="bio" placeholder="Lorem Ipsum" id="create-content">{{ profile.bio }}</textarea>
+        <textarea name="bio" placeholder="Lorem Ipsum" id="edit_bio">{{ profile.bio }}</textarea>
         {% else %}
-        <textarea name="bio" placeholder="Lorem Ipsum" id="create-content"></textarea>
+        <textarea name="bio" placeholder="Lorem Ipsum" id="edit_bio"></textarea>
         {% endif %}
     </div>
     <div>
         {% if interest %}
-        <input type="text" name="group" placeholder="Expert (optional)" id="create-group" value="{{ interest }}">
+        <input type="text" name="group" placeholder="Expert (optional)" id="edit_group" value="{{ interest }}">
         {% else %}
-        <input type="text" name="group" placeholder="Expert (optional)" id="create-group">
+        <input type="text" name="group" placeholder="Expert (optional)" id="edit_group">
         {% endif %}
     </div>
     <div>
         {% if background_colour %}
-        <input type="text" name="background_colour" placeholder="CSS property (optional)" id="create-background_colour" value="{{ background_colour }}">
+        <input type="text" name="background_colour" placeholder="Baclground in CSS property (optional)" id="edit_background_colour" value="{{ background_colour }}">
         {% else %}
-        <input type="text" name="background_colour" placeholder="CSS property (optional)" id="create-background_colour">
+        <input type="text" name="background_colour" placeholder="CSS property (optional)" id="edit_background_colour">
+        {% endif %}
+    </div>
+    <div>
+        {% if text_colour %}
+        <input type="text" name="text_colour" placeholder="Text Colour in CSS property (optional)" id="edit_text_colour" value="{{ text_colour }}">
+        {% else %}
+        <input type="text" name="text_colour" placeholder="Text Colour in CSS property (optional)" id="edit_text_colour">
         {% endif %}
     </div>
     <div>

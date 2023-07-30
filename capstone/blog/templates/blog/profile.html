@@ -5,7 +5,7 @@ profile/{{ profile.username }}
 {% endblock %}
 
 {% block body %}
-<div class="content-container" style="background:{{ background_colour }}">
+<div class="content-container" style="background:{{ background_colour }}; color:{{ text_colour }};">
     <!-- This page should exist when one tries to search for an post that does not exist -->
     <h1>{{ profile.username }}</h1>
     {% if profile.bio %}
