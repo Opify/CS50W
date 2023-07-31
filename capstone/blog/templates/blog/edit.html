@@ -5,7 +5,6 @@ Edit post
 {% endblock %}
 
 {% block body %}
-<!-- This page should exist when creating an post-->
     <h1>Edit post</h1>
 <form action="{% url 'edit' post.title %}" method="post">
     {% csrf_token %}

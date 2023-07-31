@@ -8,7 +8,6 @@
 <div class="content-container" style="background:{{ background_colour }}; color: {{ text_colour }}">
 <h1>Post of the day</h1>
 <h1>{{ post.title }}</h1>
-<!-- This page should be seen when one finds a valid post-->
 <div id="post-view">
     <p>Created by: <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></p>
     {{ content|safe }}

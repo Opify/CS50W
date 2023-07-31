@@ -5,7 +5,6 @@ Create post
 {% endblock %}
 
 {% block body %}
-<!-- This page should exist when creating an article-->
     <h1>Create post</h1>
 <form action="{% url 'create' %}" method="post">
     {% csrf_token %}
