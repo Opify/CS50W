@@ -2,6 +2,7 @@
 For my capstone project, I chose to create a blogsite, with the ability to comment, edit, customise the style of your posts and much more
 ## Distinctiveness and Complexity ##
 I believe this project is distinct as it has never been done as a project in CS50W. Moreover, the website allows users to customise the fonts and background of their posts and profile page through CSS properties (including the possibility of using images as their background). Finally, unique to the project, groups were added to help categorise posts, allowing users to quickly see all posts related to the group. Users can also claim themselves to be interested in the group subject, allowing other users to notice them easier and follow them. In addition, small functionalities such as a post of the day and random posts were also added for further distinctiveness.
+
 I believe this project is also complex as an algorithm was made from scratch to summarise changes (based on Github’s own method of tracking changes) made in an edit. The system also incorporates JavaScript to minimise reloading the websites for any action done. Finally, a custom pagination algorithm was used to easily browse posts made by the same user of the current post.
 ## Steps to run the project ##
 1. Run `pip -r requirements.txt` (for markdown module dependency)
