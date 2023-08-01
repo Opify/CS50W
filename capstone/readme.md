@@ -55,7 +55,7 @@ I believe this project is also complex as an algorithm was made from scratch to 
     * `post` handles rendering of an post and its comments.
     * `random_post` displays a random post.
     * `edits` handle the displaying of the list edits of an post, with the data of each edit being stored in a nested array. Data of the edit itself and the differences `track_changes` from `util.py` detects are stored in a list, which is nested within a list of all edits of an post.
-    * `edit` handles both rendering of the form for editing an post via a GET request and sending the newly created edit data to the `Edit` model via a POST request.
+    * `edit` handles both rendering of the form for editing a post via a GET request and sending the newly created edit data to the `Edit` model via a POST request.
     * `edit_view` handles the rendering of the edit.
     * `following` is used to render the list of all profiles the user followed.
     * `query` handles the search bar logic. If an post with the exact title the user queried is found, it redirects the user to that post page. Otherwise, it uses regex to generate a list of posts that starts with what the user queried.
